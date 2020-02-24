@@ -1,3 +1,22 @@
+src/MPLLexer.cpp
+src/MPLLexer.h
+src/MPLLexer.interp
+src/MPLLexer.tokens
+src/MPLParser.cpp
+src/MPLParser.h
+src/MPLParser.interp
+src/MPLParser.tokens
+src/MPLParserBaseListener.cpp
+src/MPLParserBaseListener.h
+src/MPLParserBaseVisitor.cpp
+src/MPLParserBaseVisitor.h
+src/MPLParserListener.cpp
+src/MPLParserListener.h
+src/MPLParserVisitor.cpp
+src/MPLParserVisitor.h
+src/mpl
+src/mpl.log
+
 # Prerequisites
 *.d
 
