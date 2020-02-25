@@ -45,7 +45,7 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
   
   antlrcpp::Any index = ctx->children[2]->accept(this);
   
-#if 1
+#if 0
   std::cout << "index type \n\t"
 	    << "(" << demangle (index) << ")"
 	    << std::endl;

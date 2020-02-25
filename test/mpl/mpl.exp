@@ -2,6 +2,7 @@ set tool "mpl"
 set exp_internal 1
 set gradeup1 "a= 5 7 3 8; a\[>a\]"
 set gradedn1 "a= 5 7 3 8; a\[<a\]"
+set index1 "a=2 3#::6; a\[ 1 1 \]"
 #set xfail_flag 1
 #
 # note that in te following, the operation "transpose" is really supposed
@@ -11,7 +12,9 @@ set gradedn1 "a= 5 7 3 8; a\[<a\]"
 #   {"\"transpose 2 3#::6\""    "0 3" }
 #   {"\"(1 0) transpose 2 3#::6\""    "0 3" }
 set testdata {
-   {"\"/.5\""           "2" }
+   {"\"$index1\""           "2" }
+
+    {"\"/.5\""           "2" }
    {"\"-5\""           "-5" }
    {"\"-~5\""           "5" }
    {"\"$ 2 3#::6\""    "0 3" }
