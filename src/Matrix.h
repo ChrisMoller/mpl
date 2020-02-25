@@ -42,6 +42,7 @@ public:
   void clear (bool clear_dims, bool clear_data);
   void set_data (std::vector<double> *ndata);
   void set_dims (std::vector<size_t> *ndims);
+  double get_value (std::vector<double>* idx);
   std::vector<double>* get_data ();
   std::vector<size_t>* get_dims ();
   void set_errmsg (std::string str);

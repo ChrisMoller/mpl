@@ -288,7 +288,7 @@ DISTCLEANFILES = .deps/*.P
 AUTOMAKE_OPTIONS = dejagnu
 
 #$(bin_PROGRAMS)-eval.o: eval.c opsdata.h printext.h node.h
-AM_CPPFLAGS = -Wno-attributes \
+AM_CPPFLAGS = -std=c++11 -Wno-attributes \
    -I/usr/local/antlr4/runtime/Cpp/run/usr/local/include/antlr4-runtime 
 
 

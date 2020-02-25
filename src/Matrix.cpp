@@ -1,4 +1,5 @@
 //#include <vector>
+#include <cmath>
 #include <antlr4-runtime.h>
 #include "DyadicFcns.h"
 #include "MonadicFcns.h"
@@ -420,4 +421,28 @@ std::string
 Matrix::get_errmsg ()
 {
   return errmsg;
+}
+
+double
+Matrix::get_value (std::vector<double>* idx)
+{
+  double rc = nan ("");
+  if (dims->size () == idx->size ()) {
+    double mpy = 1;
+    double val = 0;
+    for (int i = idx->size () - 1; i >= 0; i--) {
+      val += mpy * (*idx)[i];
+      mpy *= (*dims)[i];
+    }
+
+    size_t ix = size_t (val);
+    if (ix < data->size ()) rc = (*data)[ix];
+    else {
+      set_errmsg (std::string ("index vector out of range of given matrix"));
+    }
+  }
+  else {
+    set_errmsg (std::string ("index vector incompatible with given matrix"));
+  }
+  return rc;
 }

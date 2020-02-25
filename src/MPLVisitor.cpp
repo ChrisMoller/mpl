@@ -45,7 +45,7 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
   
   antlrcpp::Any index = ctx->children[2]->accept(this);
   
-#if 0
+#if 1
   std::cout << "index type \n\t"
 	    << "(" << demangle (index) << ")"
 	    << std::endl;
@@ -67,6 +67,7 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
   if (value.get_typeinfo() == typeid(std::vector<double>*)) {
     std::vector<double> *vals = value.as<std::vector<double>*>();
     if (index.get_typeinfo() == typeid(double)) {
+      // vector [ scalar ]
       // (1 2 3)[ 2 ]
       // 0 <= ix < rho-v
       // res = double, i.e., res = typeid index
@@ -78,6 +79,7 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
       }
     }
     else if (index.get_typeinfo() == typeid(std::vector<double>*)) {
+      // vector [ vector ]
       // (1 2 3)[ 0 2 ]
       // foreach ix,  0 <= ix < rho-v
       // res = vector double, i.e., res = typeid index,
@@ -97,6 +99,7 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
       rc = res;
     }
     else if (index.get_typeinfo() == typeid(Matrix*)) {
+      // vector [ matrix ]
       // (2 3 4)[ 2 3# 0 2 1... ]
       // foreach ix,  0 <= ix < rho-v
       // res = matrix, i.e., res = typeid index
@@ -123,24 +126,57 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
       rc = res;
     }
     else {
-      rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", index");
+      rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", vector index");
     }
   }
   else if (value.get_typeinfo() == typeid(Matrix *)) {
     Matrix *mtx = value.as<Matrix *>();
-    if (index.get_typeinfo() == typeid(std::vector<double>)) {
+    if (index.get_typeinfo() == typeid(std::vector<double>*)) {
+      // matrix [ vector ]
       //  (2 3#::6)[ 1 2]
       //  rho idx = rhorho v
       // res = double
+      std::vector<double> *idx = index.as<std::vector<double>*>();
+      if (mtx->get_rhorho () == idx->size ()) {
+	std::vector<size_t>*dims = mtx->get_dims ();
+	if (mtx->get_rhorho () == dims->size ()) {
+	  size_t i;
+	  for (i = 0; i < idx->size (); i++) {
+	    if ((*idx)[i] >= (*dims)[i]) break;
+	  }
+	  if (i == idx->size ()) {
+	    double val = mtx->get_value (idx);
+	    if (std::isnan (val)) {
+	      rc = Error(Error::ERROR_DIMENSION_ERROR);
+	      std::string em = mtx->get_errmsg ();
+	      std::cout << em << std::endl;
+	    }
+	    rc = val;
+	  }
+	  else {
+	    rc = Error (Error::ERROR_DIMENSION_MISMATCH,
+			" Index element value exceeds matrix axis bounds.");
+	  }
+	}
+	else {
+	  rc = Error (Error::ERROR_INTERNAL,
+		      "  Matrix rhorho != Matrix rho vector length.");
+        }
+      }
+      else {
+	rc = Error (Error::ERROR_DIMENSION_MISMATCH,
+		    "  The length of the index vector must equal the order of the matrix.");
+      }
     }
-    if (index.get_typeinfo() == typeid(Matrix *)) {
+    else if (index.get_typeinfo() == typeid(Matrix *)) {
+      // matrix [ matrix ]
       //  (2 3#::6)[ 1 2]
       //  rho idx = rhorho v
       // res = double
       
     }
     else {
-      rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", index");
+      rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", matrix index");
     }
   }
   else {
