@@ -2,17 +2,32 @@ set tool "mpl"
 set exp_internal 1
 set gradeup1 "a= 5 7 3 8; a\[>a\]"
 set gradedn1 "a= 5 7 3 8; a\[<a\]"
+
+# matrix[vector]
 set index1 "a=2 3#::6; a\[ 1 1 \]"
+
+# vector[scalar]
+set index2 "a=::6; a\[ 3 \]"
+
+# vector[vector]
+set index3 "a=::6; a\[ 1 3 \]"
+
+# vector[matrix]
+set index4 "a=::6; a\[ 2 2#::4 \]"
+
+# matrix[matrix]           TODO
+
 #set xfail_flag 1
 #
 # note that in te following, the operation "transpose" is really supposed
 # to be a dollar sign, but i can't figure out how to make tcl emit a dollar
 # sign.
 #
-#   {"\"transpose 2 3#::6\""    "0 3" }
-#   {"\"(1 0) transpose 2 3#::6\""    "0 3" }
 set testdata {
-   {"\"$index1\""           "2" }
+   {"\"$index1\""           "4" }
+   {"\"$index2\""           "3" }
+   {"\"$index3\""           "3" }
+   {"\"$index4\""           "0 1" }
 
     {"\"/.5\""           "2" }
    {"\"-5\""           "-5" }
