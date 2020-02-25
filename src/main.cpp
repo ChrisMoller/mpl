@@ -101,7 +101,14 @@ main (int ac, char *av[])
       std::cout << "Help!!\n";
       break;
     case 'e':
-      do_eval (false, optarg);
+      {
+	if (optarg[0] == '\'' &&
+	    optarg[strlen (optarg) -1] == '\'') {
+	  optarg[strlen (optarg) -1] = 0;
+	  do_eval (false, &optarg[1]);
+	}
+        else do_eval (false, optarg);
+      }
       break;
     case 's':
       show_exp = true;

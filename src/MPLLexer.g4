@@ -54,7 +54,7 @@ fragment Complex  : Real[+\-]Imag ;
 fragment Imag	  : Real[ij] ;
 fragment Real	  : '.'Digit+ | Digit+('.'Digit*)?([Ee][+\-]?Digit+)? ;
 fragment Digit	  : [0-9];
-fragment NaN	  : 'NAN' | 'NaN' | 'nan';
+fragment NaN	  : 'NAN' | 'NaN' | 'nan' | 'inf';
 
 
 OpStar		  	: '*';
@@ -103,6 +103,7 @@ OpQBangLeftAngle	: '?!<';
 OpQBangRightAngle	: '?!>';
 OpQBangLeftAngleEqual	: '?!<=';
 OpQBangRightAngleEqual	: '?!>=';
+OpTranspose 		: 'transpose';
 
 And		: 'and';
 Semicolon	: ';';

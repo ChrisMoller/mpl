@@ -158,6 +158,7 @@ op	: OpStar
 	| OpQBangRightAngle
 	| OpQLeftAngle
 	| OpQRightAngle
+	| OpTranspose
 	;
 
 id	: ID;

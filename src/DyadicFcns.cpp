@@ -177,8 +177,9 @@ dyadicRange (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
     double rv = right.as<double>();
     std::vector<double> *array = new std::vector<double>;
     int b = int (lv);
-    int n = 1 + int (rv);
+    int n = int (rv);
     int incr = (n >= b) ? 1 : -1;
+    n += incr;
 
     for (int i = b; i != n; i+=incr)
       array->push_back (double(i));
@@ -438,7 +439,9 @@ static dfunc dfuncs[] =
  dyadicTestGE,	// OpQBangLeftAngle		45
  dyadicTestLE,	// OpQBangRightAngle		46
  dyadicTestGT,	// OpQBangLeftAngleEqual	47
- dyadicTestLT	// OpQBangRightAngleEqual	48
+ dyadicTestLT,	// OpQBangRightAngleEqual	48
+ // the following exists because dejagnu/tcl cant handle dollar signs
+ dyadicTranspose,	// OpTranspose	 	49
 };
 
 dfunc

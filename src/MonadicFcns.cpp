@@ -396,7 +396,19 @@ static mfunc mfuncs[] =
  monadicShape,	// OpPound	35
  nullptr,	// OpComma	36
  nullptr,	// OpColon	37
- monadicRange	// OpColonColon	38
+ monadicRange,	// OpColonColon	38
+ nullptr,	// OpQEqual	39
+ nullptr,	// OpQLeftAngle		40
+ nullptr,	// OpQRightAngle	41
+ nullptr,	// OpQLeftAngleEqual	42
+ nullptr,	// OpQRightAngleEqual	43
+ nullptr,	// OpQBangEqual		44
+ nullptr,	// OpQBangLeftAngle		45
+ nullptr,	// OpQBangRightAngle		46
+ nullptr,	// OpQBangLeftAngleEqual	47
+ nullptr,	// OpQBangRightAngleEqual	48
+ // the following exists because dejagnu/tcl cant handle dollar signs
+ monadicTranspose,	// OpTranspose	 49
 };
 
 mfunc
