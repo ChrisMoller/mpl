@@ -165,7 +165,10 @@ dyadicEqual (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
     std::string *sym = left.as<std::string *>();
     get_global_symtab ()->insert (*sym, right);
   }
-   right;
+  else {
+    std::cout << "Lvalue can't be a constant.\n";
+    rc = Error (Error::ERROR_CONSTANT_LVALUE);
+  }
 }
 
 static void

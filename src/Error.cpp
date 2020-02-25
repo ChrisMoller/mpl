@@ -14,6 +14,7 @@ static std::vector<std::string> descriptions =
    "Mal-formed transpose",	// ERROR_MALFORMED_TRANSPOSE
    "Failed transpose",		// ERROR_FAILED_TRANSPOSE
    "Index out of range",	// ERROR_OUT_OF_RANGE
+   "Lvalue can't be a constant." // ERROR_CONSTANT_LVALUE
    "Internal error",		// ERROR_INTERNAL
   };
 
