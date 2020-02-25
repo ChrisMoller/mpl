@@ -73,6 +73,11 @@ do_eval (bool show, std::string str)
   visitor.visit (tree);
 }
 
+
+static int test_mode = 0;
+
+bool isTestMode () {bool rc = test_mode ? true : false; return rc; }
+
 int
 main (int ac, char *av[])
 {
@@ -92,6 +97,7 @@ main (int ac, char *av[])
      {"eval", required_argument, 0, 'e'},
      {"help", no_argument, 0, 'h'},
      {"show-expression", no_argument, 0, 's'},
+     {"test-mode", no_argument, &test_mode, 1},
      {0, 0, 0, 0}
     };
 
@@ -136,24 +142,5 @@ main (int ac, char *av[])
   }
 
   
-#if 0
-  //  do_eval ("a $ b + -c");
-  //do_eval ("a$b+-c");
-  do_eval ("4 - (11 - 7)");	// sb 0
-  do_eval ("(4 - 11) - 7");	// sb -14
-  do_eval ("4 - 11 - 7");
-  do_eval ("4 + 11");
-  do_eval ("4 - 11");
-  do_eval ("4 - -11");
-  do_eval ("1/4 * 11");
-  do_eval ("4 / 11");
-  do_eval ("4 ^ 3");
-  do_eval ("-4");
-  do_eval ("1/4");
-  do_eval ("/4");		// error--no such op
-  //do_eval ("4 $ 11 + -7");
-  //do_eval ("4$11+-7");
-  //  do_eval ("4j+5 - 6i * 99 ; 8+4i - 66;");
-#endif
   return 0;
 }

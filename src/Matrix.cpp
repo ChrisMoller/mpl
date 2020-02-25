@@ -4,6 +4,7 @@
 #include "DyadicFcns.h"
 #include "MonadicFcns.h"
 #include "Matrix.h"
+#include "main.h"
 
 Matrix::Matrix ()
 {
@@ -306,7 +307,7 @@ Matrix::print ()
     break;
   case 1:			// vector
     {
-      std::cout << ">> ";
+      if (!isTestMode ()) std::cout << ">> ";
       for (auto rp = (*data).begin (); rp != (*data).end (); rp++)
 	std::cout << *rp << " ";
       std::cout << std::endl;
@@ -317,7 +318,7 @@ Matrix::print ()
       for (int i = 0; i < (*data).size (); i++) {
 	if (0 == i % (*dims)[1]) {
 	  std::cout << std::endl;
-	  std::cout << ">> ";
+	  if (!isTestMode ()) std::cout << ">> ";
 	}
 	std::cout << (*data)[i] << " ";
       }
@@ -338,14 +339,16 @@ Matrix::print ()
 
       for (int i = 0; i < (*data).size (); i++) {
 	if (0 == i % bp2) {
-	  if (i > 0) std::cout << "\n\n";
-	  std::cout << ">> [";
-	  int j, k;
-	  for (k = 0, j = rhorho - 3; j >= 0; j--, k++) 
-	    std::cout << (i / (bp[j])) % (*dims)[k]    << " ";
-	  std::cout << " * *]:\n  ";
+	  if (!isTestMode ()) {
+	    if (i > 0) std::cout << "\n\n";
+	    std::cout << ">> [";
+	    int j, k;
+	    for (k = 0, j = rhorho - 3; j >= 0; j--, k++) 
+	      std::cout << (i / (bp[j])) % (*dims)[k]    << " ";
+	    std::cout << " * *]:\n  ";
+	  }
+	  else if (i > 0 && 0 == i % bp1) std::cout <<  "\n  ";
 	}
-	else if (i > 0 && 0 == i % bp1) std::cout <<  "\n  ";
 	std::cout << (*data)[i] << " ";
       }
       std::cout << "\n\n";

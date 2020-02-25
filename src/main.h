@@ -6,4 +6,4 @@
 #define demanglep(res) abi::__cxa_demangle(res->get_typeinfo().name(), 0, 0, nullptr)
 #endif
 
-
+bool isTestMode ();
