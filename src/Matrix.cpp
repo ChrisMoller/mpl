@@ -33,11 +33,13 @@ Matrix::Matrix (antlrcpp::Any &dr)
       data = new std::vector<double>(count);
     }
     else {
-      // fixme error now do i report that?
+      data = nullptr;
+      dims = nullptr;
     }
   }
   else {
-    // error
+    data = nullptr;
+    dims = nullptr;
   }
 }
 

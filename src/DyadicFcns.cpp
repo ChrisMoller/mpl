@@ -210,14 +210,21 @@ dyadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
   if (left.get_typeinfo() == typeid(std::vector<double>*) && 
       right.get_typeinfo() == typeid(Matrix*)) {
     Matrix *rv = right.as<Matrix *>();
-    Matrix *mtx = new Matrix (rv);
-    if (mtx->transpose (left)) rc = mtx;
-    else {
-      rc = Error(Error::ERROR_FAILED_TRANSPOSE);
-      std::string em = mtx->get_errmsg ();
-      std::cout << em << std::endl;
-      delete mtx;
+    if (rv->get_rhorho () > 0 &&
+	rv->get_rhorho () == rv->get_rho ()->size ()) {
+      Matrix *mtx = new Matrix (rv);
+      if (mtx->transpose (left)) rc = mtx;
+      else {
+	rc = Error(Error::ERROR_FAILED_TRANSPOSE);
+	std::string em = mtx->get_errmsg ();
+	std::cout << em << std::endl;
+	delete mtx;
+      }
     }
+    else {
+      Matrix *mtx = new Matrix ();
+      rc = mtx;
+    }	
   }
   else {
     rc = Error(Error::ERROR_MALFORMED_TRANSPOSE, ", incompatible arguments");
