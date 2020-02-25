@@ -103,7 +103,6 @@ OpQBangLeftAngle	: '?!<';
 OpQBangRightAngle	: '?!>';
 OpQBangLeftAngleEqual	: '?!<=';
 OpQBangRightAngleEqual	: '?!>=';
-OpTranspose 		: 'transpose';
 
 And		: 'and';
 Semicolon	: ';';

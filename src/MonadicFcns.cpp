@@ -407,8 +407,6 @@ static mfunc mfuncs[] =
  nullptr,	// OpQBangRightAngle		46
  nullptr,	// OpQBangLeftAngleEqual	47
  nullptr,	// OpQBangRightAngleEqual	48
- // the following exists because dejagnu/tcl cant handle dollar signs
- monadicTranspose,	// OpTranspose	 49
 };
 
 mfunc

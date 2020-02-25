@@ -440,8 +440,6 @@ static dfunc dfuncs[] =
  dyadicTestLE,	// OpQBangRightAngle		46
  dyadicTestGT,	// OpQBangLeftAngleEqual	47
  dyadicTestLT,	// OpQBangRightAngleEqual	48
- // the following exists because dejagnu/tcl cant handle dollar signs
- dyadicTranspose,	// OpTranspose	 	49
 };
 
 dfunc
