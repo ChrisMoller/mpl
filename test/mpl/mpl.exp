@@ -1,0 +1,21 @@
+set tool "clc"
+set exp_internal 1
+set testdata {
+   {'2+3' "5" }
+   {'2*3' "6" }
+   {'2-3' "-1" }
+   {'3/2"1.5" }
+}
+
+global MPL
+foreach pattern $testdata {
+    set inputs [lindex $pattern 0]
+    eval "spawn $MPL -e $inputs"
+    expect {
+        -re [lindex $pattern 1] {
+            pass $inputs
+        }
+        default { fail $inputs}
+    }
+}
+      
