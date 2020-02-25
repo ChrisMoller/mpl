@@ -678,6 +678,9 @@ MPLParser.h MPLParser.cpp  : MPLParser.g4
 valgrind.log : clc
 	valgrind $(VALGRIND_FLAGS) --log-file=$@ ./clc
 
+save:
+	gitpush
+
 clean-local: clean-local-check
 .PHONY: clean-local-check
 clean-local-check:
