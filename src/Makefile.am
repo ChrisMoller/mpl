@@ -25,12 +25,15 @@ AUTOMAKE_OPTIONS = dejagnu
 #$(bin_PROGRAMS)-eval.o: eval.c opsdata.h printext.h node.h
 
 
-AM_CPPFLAGS = -std=c++11 -Wno-attributes \
+AM_CPPFLAGS = -std=c++11 -Wno-attributes $(GSL_CFLAGS) \
    -I/usr/local/antlr4/runtime/Cpp/run/usr/local/include/antlr4-runtime 
 
 # AM_CPPFLAGS += --coverage
 
-mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib -lantlr4-runtime
+mpl_CFLAGS = -std=c++11 $(GSL_CFLAGS)
+
+mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib -lantlr4-runtime \
+                 $(GSL_LIBS)
 
 ANTLRFLAGS = -visitor -listener
 

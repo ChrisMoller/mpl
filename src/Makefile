@@ -198,6 +198,8 @@ ECHO_C =
 ECHO_N = -n
 ECHO_T = 
 EXEEXT = 
+GSL_CFLAGS = 
+GSL_LIBS = -lgsl -lgslcblas -lm 
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
@@ -219,6 +221,9 @@ PACKAGE_TARNAME = mpl
 PACKAGE_URL = 
 PACKAGE_VERSION = 1.0
 PATH_SEPARATOR = :
+PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG_LIBDIR = 
+PKG_CONFIG_PATH = /usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig:/usr/lib/pkgconfig
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = 
@@ -288,12 +293,15 @@ DISTCLEANFILES = .deps/*.P
 AUTOMAKE_OPTIONS = dejagnu
 
 #$(bin_PROGRAMS)-eval.o: eval.c opsdata.h printext.h node.h
-AM_CPPFLAGS = -std=c++11 -Wno-attributes \
+AM_CPPFLAGS = -std=c++11 -Wno-attributes $(GSL_CFLAGS) \
    -I/usr/local/antlr4/runtime/Cpp/run/usr/local/include/antlr4-runtime 
 
 
 # AM_CPPFLAGS += --coverage
-mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib -lantlr4-runtime
+mpl_CFLAGS = -std=c++11 $(GSL_CFLAGS)
+mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib -lantlr4-runtime \
+                 $(GSL_LIBS)
+
 ANTLRFLAGS = -visitor -listener
 ANTLRJAR = /home/moller/javastuff/antlr-4.8-complete.jar
 all: $(BUILT_SOURCES)

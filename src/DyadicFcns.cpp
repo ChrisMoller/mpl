@@ -1,10 +1,12 @@
 #include <cmath>
-
 #include <antlr4-runtime.h>
+#include <gsl/gsl_blas.h>
+
 #include "SymbolTable.h"
 #include "DyadicFcns.h"
 #include "Matrix.h"
 #include "Error.h"
+#include "main.h"
 
 static double fragmentProduct (double lv, double rv){return lv * rv;}
 static double fragmentRatio   (double lv, double rv){return lv / rv;}
@@ -399,6 +401,108 @@ dyadicShape (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
   }
 }
 
+
+static void
+dyadicMatMult (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+{
+  if (left.get_typeinfo() == typeid(Matrix*) &&
+      right.get_typeinfo()  == typeid(Matrix*)) {
+    Matrix *lv = left.as<Matrix *>();
+    Matrix *rv = right.as<Matrix *>();
+    if (lv->get_rhorho () == 2 &&
+	rv->get_rhorho () == 2) {
+      std::vector<size_t> *l_rho = lv->get_dims ();
+      std::vector<size_t> *r_rho = rv->get_dims ();
+      size_t l_rows = (*l_rho)[0];
+      size_t l_cols = (*l_rho)[1];
+      size_t r_rows = (*r_rho)[0];
+      size_t r_cols = (*r_rho)[1];
+      /***
+	    r c       r c
+            1 0       1 0
+	  [ 3 4 ]    [4 2]
+
+	                         [3 2]
+	  0 1 2 x      a b       * *
+	  3 4 5 y  *   c d  =    * *
+	  6 7 8 z      e f       * *
+	               g h
+	  
+       ***/
+
+      if (l_cols == r_rows) {
+	size_t c_rows = l_rows;
+	size_t c_cols = r_cols;
+
+	std::vector<double>* ld = lv->get_data ();
+	std::vector<double>* rd = rv->get_data ();
+
+	double *l_data = new double[l_rows * l_cols];
+	double *r_data = new double[r_rows * r_cols];
+	double *c_data = new double[c_rows * c_cols];
+	
+	for (size_t o = 0; o < (l_rows * l_cols); o++)
+	  l_data[o] = (*ld)[o];
+	for (size_t o = 0; o < (r_rows * r_cols); o++)
+	  r_data[o] = (*rd)[o];
+	for (size_t o = 0; o < (c_rows * c_cols); o++)
+	  c_data[o] = 0.0;
+
+	gsl_matrix_view L = gsl_matrix_view_array (l_data, l_rows, l_cols);
+	gsl_matrix_view R = gsl_matrix_view_array (r_data, r_rows, r_cols);
+	gsl_matrix_view C = gsl_matrix_view_array (c_data, c_rows, c_cols);
+  
+	gsl_blas_dgemm (CblasNoTrans, CblasNoTrans,
+			1.0, &L.matrix, &R.matrix,
+			0.0, &C.matrix);
+
+	std::vector<size_t> *ndims = new std::vector<size_t>(2);
+	ndims->resize (2);
+	(*ndims)[0] = c_rows;
+	(*ndims)[1] = c_cols;
+	std::vector<double> *ndata = new std::vector<double>(c_rows * c_cols);
+	ndata->resize (c_rows * c_cols);
+	for (size_t o = 0; o < (c_rows * c_rows); o++)
+	  (*ndata)[o] = c_data[o];
+
+	Matrix *mtx = new Matrix (ndims, ndata);
+	rc = mtx;
+	
+	delete l_data;
+	delete r_data;
+	delete c_data;
+      }
+      else {
+	rc = Error(Error::ERROR_DIMENSION_MISMATCH, "MatMatrix rho");
+      }
+    }
+    else {
+      rc = Error(Error::ERROR_DIMENSION_MISMATCH, "MatMatrix rhorho");
+    }
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, "Matrix multipy");
+  }
+#if 0
+  double a[] = { 0.11, 0.12, 0.13,
+                 0.21, 0.22, 0.23 };
+
+  double b[] = { 1011, 1012,
+                 1021, 1022,
+                 1031, 1032 };
+
+  double c[] = { 0.00, 0.00,
+                 0.00, 0.00 };
+
+  gsl_matrix_view A = gsl_matrix_view_array(a, 2, 3);
+  gsl_matrix_view B = gsl_matrix_view_array(b, 3, 2);
+  gsl_matrix_view C = gsl_matrix_view_array(c, 2, 2);
+
+  printf ("[ %g, %g\n", c[0], c[1]);
+  printf ("  %g, %g ]\n", c[2], c[3]);
+#endif
+}
+
 static dfunc dfuncs[] =
 {
  nullptr,	// empty	 0
@@ -439,17 +543,18 @@ static dfunc dfuncs[] =
  dyadicShape,	// OpPound	35
  nullptr,	// OpComma	36
  nullptr,	// OpColon	37
- dyadicRange,	// OpColonColon	38
- dyadicTestEq,	// OpQEqual		39
- dyadicTestLT,	// OpQLeftAngle		40
- dyadicTestGT,	// OpQRightAngle	41
- dyadicTestLE,	// OpQLeftAngleEqual	42
- dyadicTestGE,	// OpQRightAngleEqual	43
- dyadicTestNE,	// OpQBangEqual		44
- dyadicTestGE,	// OpQBangLeftAngle		45
- dyadicTestLE,	// OpQBangRightAngle		46
- dyadicTestGT,	// OpQBangLeftAngleEqual	47
- dyadicTestLT,	// OpQBangRightAngleEqual	48
+ dyadicMatMult,	// OpBSStar	38
+ dyadicRange,	// OpColonColon	39
+ dyadicTestEq,	// OpQEqual		40
+ dyadicTestLT,	// OpQLeftAngle		41
+ dyadicTestGT,	// OpQRightAngle	42
+ dyadicTestLE,	// OpQLeftAngleEqual	43
+ dyadicTestGE,	// OpQRightAngleEqual	44
+ dyadicTestNE,	// OpQBangEqual		45
+ dyadicTestGE,	// OpQBangLeftAngle		46
+ dyadicTestLE,	// OpQBangRightAngle		47
+ dyadicTestGT,	// OpQBangLeftAngleEqual	48
+ dyadicTestLT,	// OpQBangRightAngleEqual	9
 };
 
 dfunc

@@ -2,6 +2,7 @@ set tool "mpl"
 set exp_internal 1
 set gradeup1 "a= 5 7 3 8; a\[>a\]"
 set gradedn1 "a= 5 7 3 8; a\[<a\]"
+set mmpy    "(3 4#::12) \\* 4 2#::8"
 
 # matrix[vector]
 set index1 "a=2 3#::6; a\[ 1 1 \]"
@@ -28,6 +29,7 @@ set testdata {
     {"\"$index2\""           "3" }
     {"\"$index3\""           "3" }
     {"\"$index4\""           "0 1.*\n2 3" }
+    {"\"$mmpy\""   ".*\n28 34.*\n76 98.*\n124 162"}
 
     {"\"/.5\""           "2" }
     {"\"-5\""           "-5" }

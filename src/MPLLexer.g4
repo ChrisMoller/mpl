@@ -92,6 +92,7 @@ OpEqual			: '=';
 OpPound			: '#';
 OpComma			: ',';
 OpColon			: ':';
+OpBSStar		: '\\*';
 OpColonColon		: '::';
 OpQEqual		: '?=';
 OpQLeftAngle	  	: '?<';
