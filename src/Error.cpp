@@ -15,6 +15,7 @@ static std::vector<std::string> descriptions =
    "Failed transpose",		// ERROR_FAILED_TRANSPOSE
    "Failed determinant",	// ERROR_FAILED_DETERMINANT
    "Failed inverse",		// ERROR_FAILED_INVERSE
+   "Failed matrix multiply",	// ERROR_FAILED_MTX_MULTIPLY
    "Index out of range",	// ERROR_OUT_OF_RANGE
    "Lvalue can't be a constant." // ERROR_CONSTANT_LVALUE
    "Internal error",		// ERROR_INTERNAL

@@ -9,6 +9,8 @@
 #include "Matrix.h"
 #include "main.h"
 
+// https://www.gnu.org/software/gsl/doc/html/blas.html
+
 Matrix::Matrix ()
 {
   data = nullptr;
@@ -214,6 +216,77 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
     return nm; 
   }
   return nullptr; 
+}
+
+std::vector<double> *
+Matrix::multiply (int direction, std::vector<double> *vec)
+{
+  std::vector<double> *res =  nullptr;
+
+  gsl_matrix *M = nullptr;
+  gsl_vector *V = nullptr;
+  gsl_vector *Y = nullptr;
+  
+  if (dims->size () == 2) {
+    size_t rows = (*dims)[0];
+    size_t cols = (*dims)[1];
+    if (direction == VM_VEC_RIGHT) {
+      if (cols == vec->size ()) {
+	M = gsl_matrix_alloc(rows, cols);
+	for (size_t i = 0; i < data->size (); i++)
+	  M->data[i] = (*data)[i];
+	V = gsl_vector_alloc (vec->size ());
+	for (size_t i = 0; i < vec->size (); i++)
+	  V->data[i] = (*vec)[i];
+	Y = gsl_vector_calloc (rows);
+	int rc = gsl_blas_dgemv(CblasNoTrans, 1.0, M, V, 0.0, Y);
+	if (0 == rc) {
+	  res = new std::vector<double>(rows);
+	  res->resize (rows);
+	  for (size_t i = 0; i < rows; i++)
+	    (*res)[i] = Y->data[i];
+	}
+	else {
+	  set_errmsg (std::string ("Failure in matrix-vector multiplication."));
+	}
+      }
+      else {
+	set_errmsg (std::string ("Dimension mismatch in matrix-vector multiplication."));
+      }
+    }
+    else {
+      if (rows == vec->size ()) {
+	gsl_matrix *M = gsl_matrix_alloc(rows, cols);
+	for (size_t i = 0; i < data->size (); i++)
+	  M->data[i] = (*data)[i];
+	gsl_vector *V = gsl_vector_alloc (vec->size ());
+	for (size_t i = 0; i < vec->size (); i++)
+	  V->data[i] = (*vec)[i];
+	gsl_vector *Y = gsl_vector_calloc (cols);
+	int rc = gsl_blas_dgemv(CblasTrans, 1.0, M, V, 0.0, Y);
+	if (0 == rc) {
+	  res = new std::vector<double>(cols);
+	  res->resize (cols);
+	  for (size_t i = 0; i < cols; i++)
+	    (*res)[i] = Y->data[i];
+	}
+	else {
+	  set_errmsg (std::string ("Failure in matrix-vector multiplication."));
+	}
+      }
+      else {
+	set_errmsg (std::string ("Dimension mismatch in vector-matrix multiplication."));
+      }
+    }
+  }
+  else {
+    set_errmsg (std::string ("Only two-dimensional matrices supported for vector-matrix multiplication"));
+  }
+
+  if (M) gsl_matrix_free (M);
+  if (V) gsl_vector_free (V);
+  if (Y) gsl_vector_free (Y);
+  return res;
 }
 
 Matrix *

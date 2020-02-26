@@ -400,7 +400,6 @@ dyadicShape (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
   }
 }
 
-
 static void
 dyadicMatMult (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 {
@@ -411,7 +410,31 @@ dyadicMatMult (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
     Matrix *mtx = lv->multiply (rv);
     if (mtx) rc = mtx;
     else {
-      rc = Error(Error::ERROR_FAILED_TRANSPOSE);
+      rc = Error(Error::ERROR_FAILED_MTX_MULTIPLY);
+      std::string em = rv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
+  else if (left.get_typeinfo() == typeid(Matrix*) &&
+      right.get_typeinfo()  == typeid(std::vector<double>*)) {
+    Matrix *lv = left.as<Matrix *>();
+    std::vector<double> *rv = right.as<std::vector<double> *>();
+    std::vector<double> *vec = lv->multiply (Matrix::VM_VEC_RIGHT, rv);
+    if (vec) rc = vec;
+    else {
+      rc = Error(Error::ERROR_FAILED_MTX_MULTIPLY);
+      std::string em = lv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
+  else if (right.get_typeinfo() == typeid(Matrix*) &&
+      left.get_typeinfo()  == typeid(std::vector<double>*)) {
+    Matrix *rv = right.as<Matrix *>();
+    std::vector<double> *lv = left.as<std::vector<double> *>();
+    std::vector<double> *vec = rv->multiply (Matrix::VM_VEC_LEFT, lv);
+    if (vec) rc = vec;
+    else {
+      rc = Error(Error::ERROR_FAILED_MTX_MULTIPLY);
       std::string em = rv->get_errmsg ();
       std::cout << em << std::endl;
     }
@@ -419,6 +442,11 @@ dyadicMatMult (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
   else {
     rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, "Matrix multipy");
   }
+}
+
+static void
+dyadicMatSolve (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+{
 }
 
 static dfunc dfuncs[] =
@@ -474,7 +502,7 @@ static dfunc dfuncs[] =
  dyadicTestGT,	// OpQBangLeftAngleEqual	48
  dyadicTestLT,	// OpQBangRightAngleEqual	49
  nullptr,	// OpDet			50
- nullptr,	// OpBSSlash			51
+ dyadicMatSolve,	// OpBSSlash			51
 };
 
 dfunc

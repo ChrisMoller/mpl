@@ -17,12 +17,19 @@ public:
   Matrix (Matrix *rv);
   ~Matrix ();
 
+  enum {
+	VM_VEC_RIGHT,
+	VM_VEC_LEFT
+  };
+	
+
   bool isomorphic (Matrix *rv);
   Matrix * inverse ();
   double determinant ();
   Matrix * transpose ();
   Matrix * transpose (antlrcpp::Any &permutation);
   Matrix * multiply (Matrix *);
+  std::vector<double> * multiply (int direction, std::vector<double> *);
   void fill (double v);
   void copy (antlrcpp::Any &v);
   double &operator[](size_t i);
