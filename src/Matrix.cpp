@@ -1,6 +1,8 @@
 //#include <vector>
 #include <cmath>
 #include <antlr4-runtime.h>
+#include <gsl/gsl_blas.h>
+
 #include "DyadicFcns.h"
 #include "MonadicFcns.h"
 #include "Matrix.h"
@@ -141,7 +143,7 @@ private:
   std::vector<size_t> stride;
 };
 
-static bool dbl_sort (size_t i, size_t j) {return (i < j);}
+//static bool dbl_sort (size_t i, size_t j) {return (i < j);}
 
 static Matrix *
 do_transpose (std::vector<size_t>*perm, Matrix *mtx)
@@ -217,6 +219,70 @@ Matrix *
 Matrix::transpose ()
 {
   return do_transpose (nullptr, this);
+}
+
+Matrix *
+Matrix::multiply (Matrix *rv)
+{
+  Matrix *mtx = nullptr;
+  std::vector<size_t> *l_rho = dims;
+  std::vector<size_t> *r_rho = rv->get_dims ();
+  size_t l_rows = (*l_rho)[0];
+  size_t l_cols = (*l_rho)[1];
+  size_t r_rows = (*r_rho)[0];
+  size_t r_cols = (*r_rho)[1];
+
+  if (dims->size () == 2 &&
+      rv->get_rhorho () == 2) {
+    if (l_cols == r_rows) {
+      size_t c_rows = l_rows;
+      size_t c_cols = r_cols;
+
+      std::vector<double>* ld = data;
+      std::vector<double>* rd = rv->get_data ();
+
+      double *l_data = new double[l_rows * l_cols];
+      double *r_data = new double[r_rows * r_cols];
+      double *c_data = new double[c_rows * c_cols];
+	
+      for (size_t o = 0; o < (l_rows * l_cols); o++)
+	l_data[o] = (*ld)[o];
+      for (size_t o = 0; o < (r_rows * r_cols); o++)
+	r_data[o] = (*rd)[o];
+      for (size_t o = 0; o < (c_rows * c_cols); o++)
+	c_data[o] = 0.0;
+
+      gsl_matrix_view L = gsl_matrix_view_array (l_data, l_rows, l_cols);
+      gsl_matrix_view R = gsl_matrix_view_array (r_data, r_rows, r_cols);
+      gsl_matrix_view C = gsl_matrix_view_array (c_data, c_rows, c_cols);
+    
+      gsl_blas_dgemm (CblasNoTrans, CblasNoTrans,
+		      1.0, &L.matrix, &R.matrix,
+		      0.0, &C.matrix);
+
+      std::vector<size_t> *ndims = new std::vector<size_t>(2);
+      ndims->resize (2);
+      (*ndims)[0] = c_rows;
+      (*ndims)[1] = c_cols;
+      std::vector<double> *ndata = new std::vector<double>(c_rows * c_cols);
+      ndata->resize (c_rows * c_cols);
+      for (size_t o = 0; o < (c_rows * c_rows); o++)
+	(*ndata)[o] = c_data[o];
+    
+      mtx = new Matrix (ndims, ndata);
+    
+      delete l_data;
+      delete r_data;
+      delete c_data;
+    }
+    else {
+      set_errmsg (std::string ("Dimension mismatch in matrix multiplication."));
+    }
+  }
+  else {
+    set_errmsg (std::string ("Only two-dimensional matrices supported for matrix multiplication"));
+  }
+  return mtx;
 }
 
 Matrix *
@@ -443,11 +509,11 @@ Matrix::get_value (std::vector<double>* idx)
     size_t ix = size_t (val);
     if (ix < data->size ()) rc = (*data)[ix];
     else {
-      set_errmsg (std::string ("index vector out of range of given matrix"));
+      set_errmsg (std::string ("Index vector out of range of given matrix"));
     }
   }
   else {
-    set_errmsg (std::string ("index vector incompatible with given matrix"));
+    set_errmsg (std::string ("Index vector incompatible with given matrix"));
   }
   return rc;
 }

@@ -20,6 +20,7 @@ public:
   bool isomorphic (Matrix *rv);
   Matrix * transpose ();
   Matrix * transpose (antlrcpp::Any &permutation);
+  Matrix * multiply (Matrix *);
   void fill (double v);
   void copy (antlrcpp::Any &v);
   double &operator[](size_t i);
