@@ -217,13 +217,12 @@ dyadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
     Matrix *rv = right.as<Matrix *>();
     if (rv->get_rhorho () > 0 &&
 	rv->get_rhorho () == rv->get_rho ()->size ()) {
-      Matrix *mtx = new Matrix (rv);
-      if (mtx->transpose (left)) rc = mtx;
+      Matrix *xmtx = rv->transpose (left);
+      if (xmtx) rc = xmtx;
       else {
 	rc = Error(Error::ERROR_FAILED_TRANSPOSE);
-	std::string em = mtx->get_errmsg ();
+	std::string em = rv->get_errmsg ();
 	std::cout << em << std::endl;
-	delete mtx;
       }
     }
     else {

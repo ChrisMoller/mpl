@@ -143,7 +143,7 @@ private:
 
 static bool dbl_sort (size_t i, size_t j) {return (i < j);}
 
-static bool
+static Matrix *
 do_transpose (std::vector<size_t>*perm, Matrix *mtx)
 {
   if (mtx->get_rhorho () >= 2) {	// no point in "transposing" vec,scalar
@@ -158,7 +158,7 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
       else {
 	delete iperm;
 	mtx->set_errmsg (std::string ("Permutation vector incompatible with given matrix"));
-	return false;
+	return nullptr;
       }
     }
     else {
@@ -176,7 +176,7 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
       if (cperm[jj] != jj) {
 	delete iperm;
 	mtx->set_errmsg (std::string ("Permutation contains a non-unique element."));
-	return false;
+	return nullptr;
       }
     }
     
@@ -190,7 +190,7 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
 	delete iperm;
 	delete new_rho;
 	mtx->set_errmsg (std::string ("Permutation index out of range."));
-	return false;
+	return nullptr;
       }
     }
 
@@ -205,28 +205,28 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
       (*new_data)[to] = (*data)[i];
     }
 
-    mtx->clear (true, true);
-    mtx->set_data (new_data);
-    mtx->set_dims (new_rho);
+    Matrix *nm = new Matrix (new_rho, new_data);
+
     delete iperm;
+    return nm; 
   }
-  return true;
+  return nullptr; 
 }
 
-bool
+Matrix *
 Matrix::transpose ()
 {
   return do_transpose (nullptr, this);
 }
 
-bool
+Matrix *
 Matrix::transpose (antlrcpp::Any &permutation)
 {
   std::vector<double> *perm = permutation.as<std::vector<double>*>();
   std::vector<size_t> *iperm = new std::vector<size_t>(perm->size ());
   for (size_t i = 0; i < perm->size (); i++)
     (*iperm)[i] = int((*perm)[i]);
-  bool rc = do_transpose (iperm, this);
+  Matrix * rc = do_transpose (iperm, this);
   delete iperm;
   return rc;
 }

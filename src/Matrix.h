@@ -18,8 +18,8 @@ public:
   ~Matrix ();
 
   bool isomorphic (Matrix *rv);
-  bool transpose ();
-  bool transpose (antlrcpp::Any &permutation);
+  Matrix * transpose ();
+  Matrix * transpose (antlrcpp::Any &permutation);
   void fill (double v);
   void copy (antlrcpp::Any &v);
   double &operator[](size_t i);

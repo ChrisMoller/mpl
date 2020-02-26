@@ -247,12 +247,13 @@ monadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &right)
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
     Matrix *rv = right.as<Matrix *>();
-    Matrix *mtx = new Matrix (rv);
-    if (mtx->transpose ()) rc = mtx;
-    else {
-      delete mtx;
-      rc = Error(Error::ERROR_FAILED_TRANSPOSE);
-    }
+      Matrix *xmtx = rv->transpose ();
+      if (xmtx) rc = xmtx;
+      else {
+	rc = Error(Error::ERROR_FAILED_TRANSPOSE);
+	std::string em = rv->get_errmsg ();
+	std::cout << em << std::endl;
+      }
   }
   else {
     rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", transpose");
