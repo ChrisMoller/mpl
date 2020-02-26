@@ -18,6 +18,8 @@ public:
   ~Matrix ();
 
   bool isomorphic (Matrix *rv);
+  Matrix * inverse ();
+  double determinant ();
   Matrix * transpose ();
   Matrix * transpose (antlrcpp::Any &permutation);
   Matrix * multiply (Matrix *);

@@ -472,7 +472,9 @@ static dfunc dfuncs[] =
  dyadicTestGE,	// OpQBangLeftAngle		46
  dyadicTestLE,	// OpQBangRightAngle		47
  dyadicTestGT,	// OpQBangLeftAngleEqual	48
- dyadicTestLT,	// OpQBangRightAngleEqual	9
+ dyadicTestLT,	// OpQBangRightAngleEqual	49
+ nullptr,	// OpDet			50
+ nullptr,	// OpBSSlash			51
 };
 
 dfunc

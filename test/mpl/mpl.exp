@@ -3,6 +3,7 @@ set exp_internal 1
 set gradeup1 "a= 5 7 3 8; a\[>a\]"
 set gradedn1 "a= 5 7 3 8; a\[<a\]"
 set mmpy    "(3 4#::12) \\* 4 2#::8"
+set mmpyinv    "a = (2 2)#1 11 3 8; b = \\/a; a\\*b"
 
 # matrix[vector]
 set index1 "a=2 3#::6; a\[ 1 1 \]"
@@ -25,6 +26,8 @@ set index4 "a=::6; a\[ 2 2#::4 \]"
 # sign.
 #
 set testdata {
+    {"\"$mmpyinv\""   ".*\n1 0.*\n0 1"}
+    {"\"det (3 3)#1 4 3 8 5 2 9 4 7\"" "-164"}
     {"\"$index1\""           "4" }
     {"\"$index2\""           "3" }
     {"\"$index3\""           "3" }

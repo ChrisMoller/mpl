@@ -2,6 +2,7 @@
 #include <cmath>
 #include <antlr4-runtime.h>
 #include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
 
 #include "DyadicFcns.h"
 #include "MonadicFcns.h"
@@ -216,12 +217,6 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
 }
 
 Matrix *
-Matrix::transpose ()
-{
-  return do_transpose (nullptr, this);
-}
-
-Matrix *
 Matrix::multiply (Matrix *rv)
 {
   Matrix *mtx = nullptr;
@@ -295,6 +290,89 @@ Matrix::transpose (antlrcpp::Any &permutation)
   Matrix * rc = do_transpose (iperm, this);
   delete iperm;
   return rc;
+}
+
+Matrix *
+Matrix::transpose ()
+{
+  return do_transpose (nullptr, this);
+}
+
+double
+Matrix::determinant ()
+{
+  double det = nan ("");
+
+  size_t rows = (*dims)[0];
+  size_t cols = (*dims)[1];
+
+  if (rows == cols) {
+    gsl_matrix *C = gsl_matrix_alloc ((*dims)[1], (*dims)[0]);
+    for (size_t i = 0; i < data->size (); i++)
+      C->data[i] = (*data)[i];
+    gsl_permutation *P = gsl_permutation_calloc (rows);
+
+    int signum;
+    int rc =  gsl_linalg_LU_decomp(C, P, &signum);
+    if (rc == 0) {
+      det = gsl_linalg_LU_det(C, signum);
+    }
+    else {
+      set_errmsg (std::string ("Determinant failed in decompoosition."));
+    }
+    if (C) gsl_matrix_free (C);
+    if (P)  gsl_permutation_free (P);
+  }
+  else {
+    set_errmsg (std::string ("Determinant requires a square matrix."));
+  }
+  return det;
+}
+
+Matrix *
+Matrix::inverse ()
+{
+  Matrix *mtx = nullptr;
+  
+  size_t rows = (*dims)[0];
+  size_t cols = (*dims)[1];
+
+  if (rows == cols) {
+    gsl_matrix *C = gsl_matrix_alloc ((*dims)[1], (*dims)[0]);
+    for (size_t i = 0; i < data->size (); i++)
+      C->data[i] = (*data)[i];
+    gsl_permutation *P = gsl_permutation_calloc (rows);
+    gsl_matrix *I = gsl_matrix_alloc (rows, cols);
+
+    int signum;
+    int rc =  gsl_linalg_LU_decomp(C, P, &signum);
+    if (rc == 0) {
+      rc = gsl_linalg_LU_invert(C, P, I);
+      if (0 == rc) {
+	std::vector<size_t> *ndims = new std::vector<size_t>(2);
+	ndims->resize (2);
+	(*ndims)[0] = rows;
+	(*ndims)[1] = cols;
+	std::vector<double> *ndata =
+	  new std::vector<double>(data->size ());
+	ndata->resize (data->size ());
+	for (size_t i = 0; i < data->size (); i++)
+	  (*ndata)[i] = I->data[i];
+	mtx = new Matrix (ndims, ndata);
+      }
+    }
+    else {
+      set_errmsg (std::string ("Determinant failed in decompoosition."));
+    }
+    if (C) gsl_matrix_free (C);
+    if (P) gsl_permutation_free (P);
+    if (I) gsl_matrix_free (I);
+  }
+  else {
+    set_errmsg (std::string ("Determinant requires a square matrix."));
+  }	
+
+  return mtx;
 }
 
  bool

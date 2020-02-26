@@ -13,6 +13,8 @@ static std::vector<std::string> descriptions =
    "Mal-formed expression",	// ERROR_MALFORMED_EXPRESSION
    "Mal-formed transpose",	// ERROR_MALFORMED_TRANSPOSE
    "Failed transpose",		// ERROR_FAILED_TRANSPOSE
+   "Failed determinant",	// ERROR_FAILED_DETERMINANT
+   "Failed inverse",		// ERROR_FAILED_INVERSE
    "Index out of range",	// ERROR_OUT_OF_RANGE
    "Lvalue can't be a constant." // ERROR_CONSTANT_LVALUE
    "Internal error",		// ERROR_INTERNAL

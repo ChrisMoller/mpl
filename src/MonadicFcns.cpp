@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdlib>
 
+
 #include "Error.h"
 
 //https://stackoverflow.com/questions/686353/random-float-number-generation
@@ -357,6 +358,34 @@ monadicGradeDown (antlrcpp::Any &rc, antlrcpp::Any &right)
   do_monadic_grade (rc, ety_sort_dn, right);
 }
 
+static void
+monadicDeterminant (antlrcpp::Any &rc, antlrcpp::Any &right)
+{
+  Matrix *rv = right.as<Matrix *>();
+  double det = rv->determinant ();
+
+  if (std::isnan (det)) {
+    rc = Error(Error::ERROR_FAILED_DETERMINANT);
+    std::string em = rv->get_errmsg ();
+    std::cout << em << std::endl;
+  }
+  else rc = det;
+}
+
+static void
+monadicInverse (antlrcpp::Any &rc, antlrcpp::Any &right)
+{
+  Matrix *rv  = right.as<Matrix *>();
+  Matrix *mtx = rv->inverse ();
+
+  if (mtx) rc = mtx;
+  else {
+    rc = Error(Error::ERROR_FAILED_INVERSE);
+    std::string em = rv->get_errmsg ();
+    std::cout << em << std::endl;
+  }
+}
+
 static mfunc mfuncs[] =
 {
  nullptr,	// empty	 0
@@ -409,6 +438,8 @@ static mfunc mfuncs[] =
  nullptr,	// OpQBangRightAngle		47
  nullptr,	// OpQBangLeftAngleEqual	48
  nullptr,	// OpQBangRightAngleEqual	49
+ monadicDeterminant,	// OpDet		50
+ monadicInverse,	// OpBSSlash		51
 };
 
 mfunc

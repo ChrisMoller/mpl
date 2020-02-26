@@ -159,6 +159,8 @@ op	: OpStar
 	| OpQLeftAngle
 	| OpQRightAngle
 	| OpBSStar
+	| OpDet
+	| OpBSSlash
 	;
 
 id	: ID;
