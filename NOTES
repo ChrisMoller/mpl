@@ -6,11 +6,12 @@ http://tcl.tk/man/tcl8.5/TclCmd/Tcl.htm#M10
 
 https://www.tcl.tk/about/language.html
 
-make range descending
-
 
 matrix[matrix]
 
 vector & mtx selection with bools?
 
 extract 2d slices from 3d and greater ntxs
+
+
+mtx solve

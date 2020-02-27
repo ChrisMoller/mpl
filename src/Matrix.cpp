@@ -217,6 +217,118 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
   }
   return nullptr; 
 }
+std::vector<double> *
+Matrix::solve (std::vector<double> *vec)
+{
+  return nullptr;
+}
+
+Matrix *
+Matrix::solve (Matrix *mtx)
+{
+  //  ./mpl -e '(2 2#4::7) \/ 2 2#1::4'
+  Matrix *inv = mtx->inverse ();
+  Matrix *res = nullptr;
+  if (inv) {
+    res = this->multiply (inv);
+    delete inv;
+  }
+  return res;
+
+#if 0
+  Matrix *nmtx = nullptr;
+  gsl_matrix *L = nullptr;
+  gsl_matrix *R = nullptr;
+  
+  size_t l_rows = (*dims)[0];
+  size_t l_cols = (*dims)[1];
+  std::vector<size_t> *r_dims = mtx->get_dims ();
+  size_t r_rows = (*r_dims)[0];
+  size_t r_cols = (*r_dims)[1];
+  if (dims->size () == 2 &&
+      r_dims->size () == 2 &&
+      l_rows == l_cols &&
+      r_rows == r_cols &&
+      l_rows == r_rows) {
+
+#if 0
+    std::vector<double> *l_data = data;
+    std::vector<double> *r_data = mtx->get_data ();
+#else
+    std::vector<double> *r_data = data;
+    std::vector<double> *l_data = mtx->get_data ();
+#endif
+    
+    L = gsl_matrix_alloc(l_rows, l_cols);
+    for (size_t i = 0; i < data->size (); i++)
+      L->data[i] = (*l_data)[i];
+    
+    R = gsl_matrix_alloc(r_rows, r_cols);
+    for (size_t i = 0; i < r_data->size (); i++)
+      R->data[i] = (*r_data)[i];
+
+    int rc;
+    int signum;
+    gsl_permutation *P = gsl_permutation_calloc (l_rows);
+    std::cout << "before:\n";
+    for (size_t c = 0, o = 0; c < l_cols; c++) {
+      for (size_t r = 0; r < l_cols; r++, o++)
+	std::cout << L->data[o] << " ";
+      std::cout << std::endl;
+    }
+    rc = gsl_linalg_LU_decomp(L, P, &signum);
+    std::cout << "after:\n";
+    for (size_t c = 0, o = 0; c < l_cols; c++) {
+      for (size_t r = 0; r < l_cols; r++, o++)
+	std::cout << L->data[o] << " ";
+      std::cout << std::endl;
+    }
+
+    //  ./mpl -e '(2 2#4::7) \/ 2 2#1::4'
+    //  sb -0.5  1.5
+    //     -1.5 2.5
+    //
+    // CblasRight, CblasUpper,  CblasNoTrans, CblasNonUnit 
+    // is 0.166667 2.5
+    //    0.5      1.5       
+
+    if (rc == 0) {
+      // CBLAS_SIDE_t:       CblasLeft,              CblasRight￼
+      // ￼                   B = \alpha op(inv(A))B  B = \alpha B op(inv(A))
+      // CBLAS_UPLO_t:       CblasUpper, CblasLower
+      // CBLAS_TRANSPOSE_t:  CblasNoTrans, CblasTrans, CblasConjTrans
+      // CBLAS_DIAG_t:       CblasNonUnit, CblasUnit
+
+      rc = gsl_blas_dtrsm(CblasRight, CblasUpper,  CblasNoTrans,
+			  CblasNonUnit, 1.0, L, R);
+      if (rc == 0) {	
+	std::vector<size_t> *ndims = new std::vector<size_t>(2);
+	ndims->resize (2);
+	(*ndims)[0] = l_rows;
+	(*ndims)[1] = l_cols;
+	std::vector<double> *ndata = new std::vector<double>(l_rows * l_cols);
+	ndata->resize (l_rows * l_cols);
+	for (size_t o = 0; o < (l_rows * l_rows); o++)
+	  (*ndata)[o] = R->data[o];
+    
+	nmtx = new Matrix (ndims, ndata);
+      }
+      else {
+      }
+    }
+    else {
+    }
+    
+  }
+  else {
+    set_errmsg (std::string ("Only two-dimensional matrices supported for matrix-matrix solve"));
+  }
+  if (L) gsl_matrix_free (L);
+  if (R) gsl_matrix_free (R);
+
+  return nmtx;
+#endif
+}
 
 std::vector<double> *
 Matrix::multiply (int direction, std::vector<double> *vec)

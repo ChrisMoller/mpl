@@ -447,6 +447,33 @@ dyadicMatMult (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 static void
 dyadicMatSolve (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 {
+  if (left.get_typeinfo() == typeid(Matrix*) &&
+      right.get_typeinfo()  == typeid(Matrix*)) {
+    Matrix *lv = left.as<Matrix *>();
+    Matrix *rv = right.as<Matrix *>();
+    Matrix *mtx = lv->solve (rv);
+    if (mtx) rc = mtx;
+    else {
+      rc = Error(Error::ERROR_FAILED_MTX_MULTIPLY);
+      std::string em = rv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
+  else if (left.get_typeinfo() == typeid(Matrix*) &&
+      right.get_typeinfo()  == typeid(std::vector<double>*)) {
+    Matrix *lv = left.as<Matrix *>();
+    std::vector<double> *rv = right.as<std::vector<double> *>();
+    std::vector<double> *vec = lv->solve (rv);
+    if (vec) rc = vec;
+    else {
+      rc = Error(Error::ERROR_FAILED_MTX_MULTIPLY);
+      std::string em = lv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, "Matrix solve");
+  }
 }
 
 static dfunc dfuncs[] =
