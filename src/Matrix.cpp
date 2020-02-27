@@ -3,6 +3,7 @@
 #include <antlr4-runtime.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
+#include <gsl/gsl_vector_double.h>
 
 #include "DyadicFcns.h"
 #include "MonadicFcns.h"
@@ -226,7 +227,10 @@ Matrix::solve (std::vector<double> *vec)
 Matrix *
 Matrix::solve (Matrix *mtx)
 {
+#if 1
   //  ./mpl -e '(2 2#4::7) \/ 2 2#1::4'
+  //  sb -0.5  1.5
+  //     -1.5 2.5
   Matrix *inv = mtx->inverse ();
   Matrix *res = nullptr;
   if (inv) {
@@ -235,7 +239,11 @@ Matrix::solve (Matrix *mtx)
   }
   return res;
 
-#if 0
+#else
+
+  // needs work
+
+  
   Matrix *nmtx = nullptr;
   gsl_matrix *L = nullptr;
   gsl_matrix *R = nullptr;
@@ -270,19 +278,8 @@ Matrix::solve (Matrix *mtx)
     int rc;
     int signum;
     gsl_permutation *P = gsl_permutation_calloc (l_rows);
-    std::cout << "before:\n";
-    for (size_t c = 0, o = 0; c < l_cols; c++) {
-      for (size_t r = 0; r < l_cols; r++, o++)
-	std::cout << L->data[o] << " ";
-      std::cout << std::endl;
-    }
+
     rc = gsl_linalg_LU_decomp(L, P, &signum);
-    std::cout << "after:\n";
-    for (size_t c = 0, o = 0; c < l_cols; c++) {
-      for (size_t r = 0; r < l_cols; r++, o++)
-	std::cout << L->data[o] << " ";
-      std::cout << std::endl;
-    }
 
     //  ./mpl -e '(2 2#4::7) \/ 2 2#1::4'
     //  sb -0.5  1.5
@@ -299,8 +296,21 @@ Matrix::solve (Matrix *mtx)
       // CBLAS_TRANSPOSE_t:  CblasNoTrans, CblasTrans, CblasConjTrans
       // CBLAS_DIAG_t:       CblasNonUnit, CblasUnit
 
-      rc = gsl_blas_dtrsm(CblasRight, CblasUpper,  CblasNoTrans,
+#if 1
+      gsl_vector *xv = nullptr;
+      for (size_t j = 0; j < L->size2; j++) {
+	gsl_vector_view x = gsl_matrix_row (L, j);
+	xv = &(x.vector);
+	gsl_linalg_LU_svx (R, P, xv);
+	rc = gsl_linalg_LU_svx (R, P, xv);
+	for (size_t k = 0; k < xv->size; k++)
+	  std::cout << xv->data[k] << " ";
+	std::cout << std::endl;
+      }
+#else
+      rc = gsl_blas_dtrsm(CblasLeft, CblasUpper,  CblasNoTrans,
 			  CblasNonUnit, 1.0, L, R);
+#endif
       if (rc == 0) {	
 	std::vector<size_t> *ndims = new std::vector<size_t>(2);
 	ndims->resize (2);

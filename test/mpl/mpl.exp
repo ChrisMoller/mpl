@@ -6,6 +6,7 @@ set mmpy    "(3 4#::12) \\* 4 2#::8"
 set mmpyinv    "a = (2 2)#1 11 3 8; b = \\/a; a\\*b"
 set mmpvm      "a = 1 2 3; b = 3 2#::6;  a\\*b"
 set mmpmv      "(3 2 #::6)\\*1 2"
+set solvemm    "(2 2#4::7) \\/ 2 2#1::4"
 
 # matrix[vector]
 set index1 "a=2 3#::6; a\[ 1 1 \]"
@@ -28,6 +29,7 @@ set index4 "a=::6; a\[ 2 2#::4 \]"
 # sign.
 #
 set testdata {
+    {"\"$solvemm\""   ".*\n-0.5 1.5.*\n-1.5 2.5"}
     {"\"$mmpmv\""   "2 8 14"}
     {"\"$mmpvm\""   "16 22"}
     {"\"$mmpyinv\""   ".*\n1 0.*\n0 1"}
