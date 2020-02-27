@@ -30,7 +30,7 @@ public:
   Matrix * transpose (antlrcpp::Any &permutation);
   Matrix * multiply (Matrix *);
   std::vector<double> * multiply (int direction, std::vector<double> *);
-  std::vector<double> * solve (std::vector<double> *);
+  std::vector<double> * solve (int direction, std::vector<double> *);
   Matrix * solve (Matrix *);
   void fill (double v);
   void copy (antlrcpp::Any &v);

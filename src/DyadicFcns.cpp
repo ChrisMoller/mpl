@@ -460,14 +460,26 @@ dyadicMatSolve (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
     }
   }
   else if (left.get_typeinfo() == typeid(Matrix*) &&
-      right.get_typeinfo()  == typeid(std::vector<double>*)) {
+	   right.get_typeinfo()  == typeid(std::vector<double>*)) {
     Matrix *lv = left.as<Matrix *>();
     std::vector<double> *rv = right.as<std::vector<double> *>();
-    std::vector<double> *vec = lv->solve (rv);
+    std::vector<double> *vec = lv->solve (Matrix::VM_VEC_LEFT, rv);
     if (vec) rc = vec;
     else {
       rc = Error(Error::ERROR_FAILED_MTX_MULTIPLY);
       std::string em = lv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
+  else if (right.get_typeinfo() == typeid(Matrix*) &&
+	   left.get_typeinfo()  == typeid(std::vector<double>*)) {
+    Matrix *rv = right.as<Matrix *>();
+    std::vector<double> *lv = left.as<std::vector<double> *>();
+    std::vector<double> *vec = rv->solve (Matrix::VM_VEC_RIGHT, lv);
+    if (vec) rc = vec;
+    else {
+      rc = Error(Error::ERROR_FAILED_MTX_MULTIPLY);
+      std::string em = rv->get_errmsg ();
       std::cout << em << std::endl;
     }
   }

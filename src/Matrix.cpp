@@ -219,9 +219,15 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
   return nullptr; 
 }
 std::vector<double> *
-Matrix::solve (std::vector<double> *vec)
+Matrix::solve (int direction, std::vector<double> *vec)
 {
-  return nullptr;
+  Matrix *inv = this->inverse ();
+  std::vector<double> *res = nullptr;
+  if (inv) {
+    res = this->multiply (direction, vec);
+    delete inv;
+  }
+  return res;
 }
 
 Matrix *
