@@ -683,6 +683,7 @@ Matrix::print ()
       }
 
       for (int i = 0; i < (*data).size (); i++) {
+	if (i > 0 && 0 == i % bp1) std::cout <<  "\n  ";
 	if (0 == i % bp2) {
 	  if (!isTestMode ()) {
 	    if (i > 0) std::cout << "\n\n";
@@ -692,7 +693,6 @@ Matrix::print ()
 	      std::cout << (i / (bp[j])) % (*dims)[k]    << " ";
 	    std::cout << " * *]:\n  ";
 	  }
-	  else if (i > 0 && 0 == i % bp1) std::cout <<  "\n  ";
 	}
 	std::cout << (*data)[i] << " ";
       }

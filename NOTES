@@ -12,6 +12,9 @@ matrix[matrix]
 vector & mtx selection with bools?
 
 extract 2d slices from 3d and greater ntxs
+   matrix [inf k] -- extract all of column k
+   matrix [k inf] -- extract all of row k
+   matrix [inf inf k] -- extract all of the plane where d[0] == k
+   matrix [inf j k] -- extract all of the row where d[1] = j && d[0] == k
 
 
-mtx solve
