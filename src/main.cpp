@@ -23,8 +23,6 @@
 using namespace mpl;
 using namespace antlr4;
 
-
-
 antlrcpp::Any::~Any ()
 {
   /****

@@ -15,6 +15,172 @@
 #include "MonadicFcns.h"
 #include "Print.h"
 
+
+
+/*** programs ***/
+
+/***
+
+
+    ./mpl -e '(a=7; f; g;){7+a; 8-f; 2*g;}'
+
+    0 (
+(
+toString 0 "("
+toTree (
+getText (
+
+1 a
+toString 1 "[50 21 14]"
+toTree (a a)
+getText a
+
+2 =
+toString 2 "="
+toTree =
+getText =
+
+3 7
+toString 3 "[52 21 14]"
+toTree (7 7)
+getText 7
+
+4 ;
+toString 4 ";"
+toTree ;
+getText ;
+
+5 f
+toString 5 "[50 21 14]"
+toTree (f f)
+getText f
+
+6 ;
+toString 6 ";"
+toTree ;
+getText ;
+
+7 g
+toString 7 "[50 21 14]"
+toTree (g g)
+getText g
+
+8 ;
+toString 8 ";"
+toTree ;
+getText ;
+
+9 )
+toString 9 ")"
+toTree )
+getText )
+
+10 {
+toString 10 "{"
+toTree {
+getText {
+
+11 7+a;
+toString 11 "[64 21 14]"
+toTree (7+a; (7+a (7 7) (+ +) (a (a a))) (; ;))
+getText 7+a;
+
+12 8-f;
+toString 12 "[64 21 14]"
+toTree (8-f; (8-f (8 8) (- -) (f (f f))) (; ;))
+getText 8-f;
+
+13 2*g;
+toString 13 "[64 21 14]"
+toTree (2*g; (2*g (2 2) (* *) (g (g g))) (; ;))
+getText 2*g;
+
+14 }
+toString 14 "}"
+toTree }
+getText }
+
+
+    ./mpl -e '(){7+a; 8-f; 2*g;}'
+
+    0 (
+(
+toString 0 "("
+toTree (
+getText (
+
+1 )
+toString 1 ")"
+toTree )
+getText )
+
+2 {
+toString 2 "{"
+toTree {
+getText {
+
+3 7+a;
+toString 3 "[64 21 14]"
+toTree (7+a; (7+a (7 7) (+ +) (a (a a))) (; ;))
+getText 7+a;
+
+4 8-f;
+toString 4 "[64 21 14]"
+toTree (8-f; (8-f (8 8) (- -) (f (f f))) (; ;))
+getText 8-f;
+
+5 2*g;
+toString 5 "[64 21 14]"
+toTree (2*g; (2*g (2 2) (* *) (g (g g))) (; ;))
+getText 2*g;
+
+6 }
+toString 6 "}"
+toTree }
+getText }
+
+
+    
+ ***/
+
+
+antlrcpp::Any
+MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
+{
+  antlrcpp::Any rc;
+  size_t n = ctx->children.size();
+
+  size_t nr_kids = ctx->children.size ();
+  for (size_t i = 0; i < nr_kids; i++) {
+    antlr4::tree::ParseTree *pt =  ctx->children[i];
+
+    std::string str = pt->getText ();
+    std::cout << i << " " << str << std::endl;
+
+    if (i == 0) {
+      std::string ss =  pt->toString ();
+      std::cout << ss.front () << std::endl;
+    }
+    
+#if 1
+    //    antlrcpp::Any result = ctx->children[i]->accept(this);
+    //    antlrcpp::Any result = ctx->children[i];
+    std::cout << "toString " << i << " \"" << pt->toString () << "\"\n";;
+    std::cout << "toTree " << pt->toStringTree (false) << std::endl;
+    std::cout << "getText " << pt->getText () << std::endl;
+    std::cout << "\n";
+#if 0
+    std::cout << "child " << i << " "
+	      << " type \n\t"
+	      << "(" << demanglep (pt) << ")"
+	      << std::endl;
+#endif
+#endif
+  }
+  
+  return rc;
+}
+
 /*** indices ***/
 
 antlrcpp::Any

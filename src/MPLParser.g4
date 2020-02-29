@@ -18,7 +18,6 @@ options {
 // Follows directly after the standard #includes in h + cpp files.
 
 @parser::postinclude {
-
 /* parser postinclude section */
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 }
@@ -37,20 +36,28 @@ options {
 
 @parser::members {
 /* public parser declarations/members section */
-bool myAction() { return true; }
-bool doesItBlend() { return true; }
-void cleanUp() {}
-void doInit() {}
-void doAfter() {}
+//void myAction(antlr4::Token *tok)
+//{
+//  std::cout << "myAction\n";
+//}
+//bool myAction() { return true; }
+//bool doesItBlend() { return true; }
+//void cleanUp() {}
+//void doInit() {}
+//void doAfter() {}
 }
 
 // Appears in the public part of the parser in the h file.
 
-@parser::declarations {/* private parser declarations section */}
+@parser::declarations {
+/* private parser declarations section */
+}
 
 // Appears in line with the other class member definitions in the cpp file.
 
-@parser::definitions {/* parser definitions section */}
+@parser::definitions {
+/* parser definitions section */
+}
 
 // Additionally there are similar sections for (base)listener
 // and (base)visitor files.
@@ -74,8 +81,12 @@ void doAfter() {}
 
 @parser::visitorpreinclude {/* visitor preinclude section */}
 @parser::visitorpostinclude {/* visitor postinclude section */}
-@parser::visitordeclarations {/* visitor public declarations/members section */}
-@parser::visitormembers {/* visitor private declarations/members section */}
+@parser::visitordeclarations {
+/* visitor public declarations/members section */
+}
+@parser::visitormembers {
+/* visitor private declarations/members section */
+}
 @parser::visitordefinitions {/* visitor definitions section */}
 
 @parser::basevisitorpreinclude {/* base visitor preinclude section */}
@@ -100,14 +111,42 @@ eos	: Semicolon | EOL | EOF;
 
 expr	: <assoc = right> expr op expr		# MPLDyadic
       	| <assoc = right> op expr 		# MPLMonadic
-      	| <assoc = right> op OpenSquare op_or_expr CloseSquare expr 	# MPLQualMono
+      	| <assoc = right> op
+	    OpenSquare op_or_expr CloseSquare expr 	# MPLQualMono
 	| OpenPar expr ClosePar			# MPLParen
 	| expr OpenSquare expr CloseSquare	# MPLIndex 
     	| identifier = id			# MPLIdentifier
-  	| Number				# MPLNumber
-  	| Number Number+			# MPLVector
+  	| Number     				# MPLNumber
+  	| Number Number+		   	# MPLVector
     	| String				# MPLString
+	| OpenPar (id (OpEqual expr)? Semicolon)* ClosePar
+	  OpenCurly stat+ CloseCurly            #MPLProgramme
+//	| OpenPar (expr Semicolon)* ClosePar
+//	  OpenCurly stat+ CloseCurly            #MPLProgramme
 	;
+
+
+//param   : id (OpEqual expr)?;
+//param   : p=id {set_param($p.text);} (OpEqual e=expr {set_init ($e.text);})?;
+
+// e.start:  type antlr4::Token
+
+// MPLProgrammeContext : public ExprContext
+//          std::vector<StatContext *> stat();
+//          StatContext* stat(size_t i);
+//          std::vector<ExprContext *> expr();
+//          ExprContext* expr(size_t i);
+// ExprContext : public antlr4::ParserRuleContext
+//          nothing useful
+// ParserRuleContext : public RuleContext
+//          Token *start;
+//          Token *stop;
+// RuleContext : public tree::ParseTree
+//           virtual std::string getText() override;
+//           virtual std::string toStringTree(bool pretty = false) override;
+//           virtual std::string toString() override;
+//           std::vector<ParseTree *> children;
+// 
 
 op_or_expr : op | expr ;
 	

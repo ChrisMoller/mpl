@@ -18,3 +18,9 @@ extract 2d slices from 3d and greater ntxs
    matrix [inf j k] -- extract all of the row where d[1] = j && d[0] == k
 
 
+
+https://stackoverflow.com/questions/38106771/antlr4-how-do-i-get-the-token-type-as-the-token-text-in-antlr
+
+4
+
+This is what the vocabulary is for. Use yourLexer.getVocabulary() or yourParser.getVocabulary() and then vocabulary.getSymbolicName(tokenType) for the text representation of the token type. If that returns an empty string try as second step vocabulary.getLiteralName(tokenType), which returns the text used to define the token 

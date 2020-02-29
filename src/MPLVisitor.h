@@ -9,6 +9,8 @@
 #include "DyadicFcns.h"
 #include "MonadicFcns.h"
 
+void set_params (std::string p, std::string e);
+
 using namespace mpl;
 using namespace antlr4;
 
@@ -19,7 +21,10 @@ class  MPLVisitor : public MPLParserBaseVisitor {
 public:
   MPLVisitor () {}
   MPLVisitor (bool v, std::string&str) {show = v; lexpr = str;}
-  
+
+  antlrcpp::Any
+  visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx) override;
+
   antlrcpp::Any
   visitMPLIndex(MPLParser::MPLIndexContext *ctx) override;
   

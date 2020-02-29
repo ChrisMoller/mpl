@@ -34,7 +34,9 @@ lexer grammar MPLLexer;
 }
 
 // Appears in the private part of the lexer in the h file.
-@lexer::declarations {/* private lexer declarations/members section */}
+@lexer::declarations {
+/* private lexer declarations/members section */
+}
 
 // Appears in line with the other class member definitions in the cpp file.
 @lexer::definitions {/* lexer definitions section */}
@@ -49,13 +51,12 @@ tokens {
 //Continue: 'continue';
 
 
-Number	  : '~'?(Real | Imag | Complex | NaN);
+Number	          : '~'?(Real | Imag | Complex | NaN);
 fragment Complex  : Real[+\-]Imag ;
 fragment Imag	  : Real[ij] ;
 fragment Real	  : '.'Digit+ | Digit+('.'Digit*)?([Ee][+\-]?Digit+)? ;
 fragment Digit	  : [0-9];
 fragment NaN	  : 'NAN' | 'NaN' | 'nan' | 'inf';
-
 
 OpStar		  	: '*';
 OpSlash		  	: '/';
@@ -113,11 +114,13 @@ OpenPar		: '(';
 ClosePar	: ')';
 OpenSquare	: '[';
 CloseSquare	: ']';
+OpenCurly	: '{';
+CloseCurly	: '}';
 //Ampersand	: '&' -> type(DUMMY);
 
 //Vector  : Number Number+ ;
 
-ID: LETTER (LETTER | '0'..'9')*;
+ID: LETTER (LETTER | Digit)*;
 fragment LETTER : [_a-zA-Z];
 
 String		: '"' .*? '"';
