@@ -22,7 +22,7 @@
 /***
 
 
-    ./mpl -e '(a=7; f; g;){7+a; 8-f; 2*g;}'
+    ./mpl -e '(ggga=7; f; g;){7+a; 8-f; 2*g;}'
 
     0 (
 (
@@ -143,26 +143,129 @@ getText }
     
  ***/
 
+class Programme {
+public:
+  Programme () {stmts = new std::vector<antlr4::tree::ParseTree *>;}
+  
+  void  update_symtab (std::string &param_name,
+		       std::string &init_string,
+		       antlr4::tree::ParseTree *&stmt)
+  {
+    if (!param_name.empty ()) {
+      antlrcpp::Any init = stmt;
+      programme_symtab.insert (param_name, init);
+    }
+    param_name.clear ();
+    init_string.clear ();
+    stmt = nullptr;
+  }
+
+  void push_statement (antlr4::tree::ParseTree *&stmt)
+  {
+    stmts->push_back (stmt);
+  }
+
+  std::vector<antlr4::tree::ParseTree *>*
+  get_stmts () {return stmts;}
+  
+private:
+  SymbolTable programme_symtab;
+  std::vector<antlr4::tree::ParseTree *>*stmts;
+};
+
+typedef enum
+  {
+   STATE_WAITING_FOR_PARAMS,	      
+   STATE_IN_PARAMS,	      
+   STATE_WAITING_FOR_INITIALISER,
+   STATE_WAITING_FOR_STATEMENTS,
+   STATE_IN_STATEMENTS
+  } state_e;
 
 antlrcpp::Any
 MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
 {
+  std::string latest_param;
+  std::string latest_init;
+  antlr4::tree::ParseTree *latest_pt = nullptr;
+    
   antlrcpp::Any rc;
-  size_t n = ctx->children.size();
 
+  Programme *programme = new Programme;
+
+  state_e state = STATE_WAITING_FOR_PARAMS;
   size_t nr_kids = ctx->children.size ();
   for (size_t i = 0; i < nr_kids; i++) {
     antlr4::tree::ParseTree *pt =  ctx->children[i];
 
-    std::string str = pt->getText ();
-    std::cout << i << " " << str << std::endl;
-
-    if (i == 0) {
-      std::string ss =  pt->toString ();
-      std::cout << ss.front () << std::endl;
-    }
+    //    std::string str = pt->getText ();
+    //std::cout << i << " " << str << std::endl;
     
-#if 1
+    switch(state) {
+    case STATE_WAITING_FOR_PARAMS:
+      {
+	std::string ss =  pt->getText ();
+	if ('(' == ss.front ()) {
+	  state = STATE_IN_PARAMS;
+	}
+      }
+      break;
+    case STATE_IN_PARAMS:
+      {
+	std::string ss =  pt->getText ();
+	switch (ss.front ()) {
+	case '=': state = STATE_WAITING_FOR_INITIALISER; break;
+	case ';':
+	  programme->update_symtab (latest_param, latest_init, latest_pt);
+	  state = STATE_IN_PARAMS;
+	  break;
+	case ')':
+	  programme->update_symtab (latest_param, latest_init, latest_pt);
+	  state = STATE_WAITING_FOR_STATEMENTS;
+	  break;
+	default:
+	  latest_param = ss;
+	  break;
+	}
+      }
+      break;
+    case STATE_WAITING_FOR_INITIALISER:
+      {
+	std::string ss =  pt->getText ();
+	switch (ss.front ()) {
+	case ';':
+	  programme->update_symtab (latest_param, latest_init, latest_pt);
+	  state = STATE_IN_PARAMS;
+	  break;
+	case ')':
+	  programme->update_symtab (latest_param, latest_init, latest_pt);
+	  state = STATE_WAITING_FOR_STATEMENTS;
+	  break;
+	default: latest_init = ss; break;
+	}
+      }
+      break;
+    case STATE_WAITING_FOR_STATEMENTS:
+      {
+	std::string ss =  pt->getText ();
+	if ('{' == ss.front ()) {
+	  state = STATE_IN_STATEMENTS;
+	}
+      }
+      break;
+    case STATE_IN_STATEMENTS:
+      {
+	std::string ss =  pt->getText ();
+	switch (ss.front ()) {
+	case ';': state = STATE_WAITING_FOR_PARAMS; break;
+	case '}': state = STATE_WAITING_FOR_PARAMS; break;
+	default: programme->push_statement (pt); break;
+      }
+      break;
+    }
+      
+    
+#if 0
     //    antlrcpp::Any result = ctx->children[i]->accept(this);
     //    antlrcpp::Any result = ctx->children[i];
     std::cout << "toString " << i << " \"" << pt->toString () << "\"\n";;
@@ -176,6 +279,15 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
 	      << std::endl;
 #endif
 #endif
+    }
+  }
+
+  std::vector<antlr4::tree::ParseTree *>*stmts =
+    programme->get_stmts ();
+  size_t n = stmts->size ();
+  for (size_t i = i; i < n; i++) {
+    antlr4::tree::ParseTree *px = (*stmts)[i];
+    antlrcpp::Any rc = px->accept (this);
   }
   
   return rc;
