@@ -101,7 +101,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_mpl_OBJECTS = DyadicFcns.$(OBJEXT) Error.$(OBJEXT) main.$(OBJEXT) \
 	Matrix.$(OBJEXT) MonadicFcns.$(OBJEXT) MPLVisitor.$(OBJEXT) \
-	Print.$(OBJEXT) SymbolTable.$(OBJEXT)
+	Print.$(OBJEXT) SymbolTable.$(OBJEXT) Programme.$(OBJEXT)
 nodist_mpl_OBJECTS = MPLLexer.$(OBJEXT) MPLParser.$(OBJEXT)
 mpl_OBJECTS = $(am_mpl_OBJECTS) $(nodist_mpl_OBJECTS)
 mpl_LDADD = $(LDADD)
@@ -278,7 +278,8 @@ mpl_SOURCES = \
                MonadicFcns.cpp MonadicFcns.h \
                MPLVisitor.cpp MPLVisitor.h \
                Print.cpp Print.h \
-               SymbolTable.cpp SymbolTable.h
+               SymbolTable.cpp SymbolTable.h \
+               Programme.cpp Programme.h
 
 nodist_mpl_SOURCES = MPLLexer.cpp MPLParser.cpp
 BUILT_SOURCES = MPLLexer.cpp MPLParser.cpp MPLParserBaseVisitor.h
@@ -399,6 +400,7 @@ include ./$(DEPDIR)/MPLVisitor.Po
 include ./$(DEPDIR)/Matrix.Po
 include ./$(DEPDIR)/MonadicFcns.Po
 include ./$(DEPDIR)/Print.Po
+include ./$(DEPDIR)/Programme.Po
 include ./$(DEPDIR)/SymbolTable.Po
 include ./$(DEPDIR)/main.Po
 

@@ -14,6 +14,7 @@
 #include "DyadicFcns.h"
 #include "MonadicFcns.h"
 #include "Print.h"
+#include "Programme.h"
 
 
 
@@ -143,6 +144,10 @@ getText }
     
  ***/
 
+
+// ./mpl -e 'pgm = (ggga=(7-9); f; g;){7+6; 8-2; 2*4;}; 8-777; pgm'
+
+#if 0
 class Programme {
 public:
   Programme (antlr4::tree::ParseTreeVisitor *tx) {
@@ -182,6 +187,7 @@ private:
   SymbolTable programme_symtab;
   std::vector<antlr4::tree::ParseTree *>*stmts;
 };
+#endif
 
 typedef enum
   {
@@ -299,8 +305,9 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
     antlr4::tree::ParseTree *px = (*stmts)[i];
     antlr4::tree::ParseTreeVisitor *that = programme->get_this ();
     antlrcpp::Any rc = px->accept (that);
-    //    antlrcpp::Any rc = px->accept (this);
   }
+
+  rc = programme;
   
   return rc;
 }
@@ -731,11 +738,29 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
 	  
 	  if (newres.isNull ())
 	    print_str (show, lexpr,ss);
-	  else 
+	  else {
+	    if  (newres.get_typeinfo() == typeid(Programme *)) {
+	      std::cout << "stop1\n";
+	      Programme *programme = newres.as<Programme *>();
+	      std::vector<antlr4::tree::ParseTree *>*stmts =
+		programme->get_stmts ();
+	      size_t n = stmts->size ();
+	      std::cout << "n = " << n << std::endl;
+	      for (size_t iii = i; iii < n; iii++) {
+		antlr4::tree::ParseTree *px = (*stmts)[iii];
+		antlr4::tree::ParseTreeVisitor *that = programme->get_this ();
+		antlrcpp::Any rc = px->accept (that);
+	      }
+	    }
 	    print_val (show, lexpr, newres);
+	  }
 	}	
-	else 
-	  print_val (show, lexpr, res);
+	else {
+	  if  (res.get_typeinfo() == typeid(Programme *)) {
+	      std::cout << "stop2\n";
+	  }
+	  else print_val (show, lexpr, res);
+	}
       }
     }
   }

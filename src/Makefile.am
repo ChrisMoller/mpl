@@ -7,7 +7,8 @@ mpl_SOURCES = \
                MonadicFcns.cpp MonadicFcns.h \
                MPLVisitor.cpp MPLVisitor.h \
                Print.cpp Print.h \
-               SymbolTable.cpp SymbolTable.h
+               SymbolTable.cpp SymbolTable.h \
+               Programme.cpp Programme.h
 
 nodist_mpl_SOURCES =  MPLLexer.cpp MPLParser.cpp
 BUILT_SOURCES = MPLLexer.cpp MPLParser.cpp MPLParserBaseVisitor.h
