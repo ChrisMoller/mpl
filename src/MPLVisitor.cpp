@@ -145,7 +145,10 @@ getText }
 
 class Programme {
 public:
-  Programme () {stmts = new std::vector<antlr4::tree::ParseTree *>;}
+  Programme (antlr4::tree::ParseTreeVisitor *tx) {
+    that = tx;
+    stmts = new std::vector<antlr4::tree::ParseTree *>;
+  }
   
   void  update_symtab (std::string &param_name,
 		       std::string &init_string,
@@ -165,10 +168,17 @@ public:
     stmts->push_back (stmt);
   }
 
+  antlr4::tree::ParseTreeVisitor *
+  get_this ()
+  {
+    return that;
+  }
+
   std::vector<antlr4::tree::ParseTree *>*
   get_stmts () {return stmts;}
   
 private:
+  antlr4::tree::ParseTreeVisitor *that;
   SymbolTable programme_symtab;
   std::vector<antlr4::tree::ParseTree *>*stmts;
 };
@@ -191,7 +201,7 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
     
   antlrcpp::Any rc;
 
-  Programme *programme = new Programme;
+  Programme *programme = new Programme (this);
 
   state_e state = STATE_WAITING_FOR_PARAMS;
   size_t nr_kids = ctx->children.size ();
@@ -287,7 +297,9 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
   size_t n = stmts->size ();
   for (size_t i = i; i < n; i++) {
     antlr4::tree::ParseTree *px = (*stmts)[i];
-    antlrcpp::Any rc = px->accept (this);
+    antlr4::tree::ParseTreeVisitor *that = programme->get_this ();
+    antlrcpp::Any rc = px->accept (that);
+    //    antlrcpp::Any rc = px->accept (this);
   }
   
   return rc;
