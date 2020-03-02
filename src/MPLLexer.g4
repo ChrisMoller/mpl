@@ -15,6 +15,7 @@ lexer grammar MPLLexer;
 
 @lexer::postinclude {
 /* lexer postinclude section */
+#include "main.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 }
 
@@ -127,6 +128,24 @@ String		: '"' .*? '"';
 
 LASTTOKEN	: '><';
 Comment 	: '<!--' .*? '-->' -> skip;
-EOL		: [\n\r]+ ;
-WS		: [ \t]+ -> channel(99);
+
+EOL		: {isFromCmdLine()}? [\n\r]+ ;
+
+WS		: ({isFromCmdLine()}?  [ \t]+
+		| {isFromFile()}?   [ \n\t]+) -> skip
+		;
+
+//WS		: [ \t]+ -> channel(99);
+
+//EOL		: {isFromCmdLine()}? [\n\r]+ ;
+//EOL		: [\n\r]+ ;
+
+//WS		: ({isFromCmdLine()}?  [ \t]+
+//		|  EOF
+//		| {isFromFile()}?   [ \n\t]+) -> skip
+//		;
+//
+//WS		: ({isFromCmdLine()}? (EOF | [ \t]+)
+//		| {isFromFile()}?   (EOF | [ \n\t]+)) -> channel(99)
+//		;
 

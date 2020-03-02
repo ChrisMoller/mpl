@@ -213,6 +213,21 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
   size_t nr_kids = ctx->children.size ();
   for (size_t i = 0; i < nr_kids; i++) {
     antlr4::tree::ParseTree *pt =  ctx->children[i];
+#if 0
+    Token *token = pt->start;
+    //    antlrcpp::Any result = ctx->children[i]->accept(this);
+    //    antlrcpp::Any result = ctx->children[i];
+    std::cout << "toString " << i << " \"" << pt->toString () << "\"\n";;
+    std::cout << "toTree " << pt->toStringTree (false) << std::endl;
+    std::cout << "getText " << pt->getText () << std::endl;
+    std::cout << "\n";
+#if 0
+    std::cout << "child " << i << " "
+	      << " type \n\t"
+	      << "(" << demanglep (pt) << ")"
+	      << std::endl;
+#endif
+#endif
 
     //    std::string str = pt->getText ();
     //std::cout << i << " " << str << std::endl;
@@ -281,20 +296,6 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
     }
       
     
-#if 0
-    //    antlrcpp::Any result = ctx->children[i]->accept(this);
-    //    antlrcpp::Any result = ctx->children[i];
-    std::cout << "toString " << i << " \"" << pt->toString () << "\"\n";;
-    std::cout << "toTree " << pt->toStringTree (false) << std::endl;
-    std::cout << "getText " << pt->getText () << std::endl;
-    std::cout << "\n";
-#if 0
-    std::cout << "child " << i << " "
-	      << " type \n\t"
-	      << "(" << demanglep (pt) << ")"
-	      << std::endl;
-#endif
-#endif
     }
   }
 

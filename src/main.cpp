@@ -20,6 +20,13 @@
 
 #include "Matrix.h"
 
+static source_e current_source;
+
+source_e get_source () { return current_source; }
+bool isFromFile ()     { return current_source == SOURCE_FILE; }
+bool isFromCmdLine ()  { return current_source == SOURCE_CMDLINE; }
+void set_source (source_e src) {current_source = src;}
+
 using namespace mpl;
 using namespace antlr4;
 
@@ -45,9 +52,11 @@ antlrcpp::Any::~Any ()
 }
 
 static void
-do_eval (bool show, std::string str)
+do_eval (source_e src, bool show, std::string str)
 {
   //  std::cout << "\n\n\nParsing \"" << str << "\"" << std::endl;
+
+  set_source (src);
   
   ANTLRInputStream input(str);
   
@@ -55,7 +64,7 @@ do_eval (bool show, std::string str)
   CommonTokenStream tokens(&lexer);
   tokens.fill();
 
-#ifdef SHOW_TOKENS
+#if 0
   for (auto token : tokens.getTokens()) {
     std::cout << token->toString() << std::endl;
   }
@@ -71,6 +80,7 @@ do_eval (bool show, std::string str)
 
   MPLVisitor visitor (show, str);
   visitor.visit (tree);
+  set_source (SOURCE_NONE);
 }
 
 
@@ -111,9 +121,9 @@ main (int ac, char *av[])
 	if (optarg[0] == '\'' &&
 	    optarg[strlen (optarg) -1] == '\'') {
 	  optarg[strlen (optarg) -1] = 0;
-	  do_eval (false, &optarg[1]);
+	  do_eval (SOURCE_CMDLINE, false, &optarg[1]);
 	}
-        else do_eval (false, optarg);
+        else do_eval (SOURCE_CMDLINE, false, optarg);
       }
       break;
     case 's':
@@ -130,14 +140,31 @@ main (int ac, char *av[])
       //      std::cout << "reading \"" << av[i] << "\"";
       std::ifstream file(av[i]);
       if (file.is_open ()) {
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string str = buffer.str ();
+	if (!str.empty ()) {
+	  do_eval (SOURCE_FILE, show_exp, str);
+	}
+      }
+      else std::cerr << "open failed\n";
+
+
+#if 0
+      if (file.is_open ()) {
 	std::string str;
+	int i = 0;
 	 while (! file.eof() ) {
 	   getline (file, str);
-	   if (!str.empty ()) do_eval (show_exp, str);
+	   if (!str.empty ()) {
+	     std::cout << "line " << i++ << ": " << str <<  std::endl;
+	     do_eval (SOURCE_FILE, show_exp, str);
+	   }
 	 }
 	 file.close();
       }
       else std::cerr << "open failed\n";
+#endif
     }
   }
 

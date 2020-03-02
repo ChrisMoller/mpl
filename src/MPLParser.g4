@@ -19,6 +19,7 @@ options {
 
 @parser::postinclude {
 /* parser postinclude section */
+#include "main.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 }
 
@@ -106,7 +107,9 @@ main	  : stat+ EOF;
 stat: expr eos      				# MPLStatement
 ;
 
-eos	: Semicolon | EOL | EOF;
+eos	: {isFromCmdLine()}? Semicolon | EOL | EOF
+	| {isFromFile()}? Semicolon | EOF
+	;
 
 
 expr	: <assoc = right> expr op expr		# MPLDyadic
@@ -119,7 +122,7 @@ expr	: <assoc = right> expr op expr		# MPLDyadic
   	| Number     				# MPLNumber
   	| Number Number+		   	# MPLVector
     	| String				# MPLString
-	| OpenPar (id (OpEqual expr)? Semicolon)* ClosePar
+	| OpenPar (id (OpEqual expr)? eos)* ClosePar
 	  OpenCurly stat+ CloseCurly            #MPLProgramme
 //	| OpenPar (expr Semicolon)* ClosePar
 //	  OpenCurly stat+ CloseCurly            #MPLProgramme
