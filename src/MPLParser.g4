@@ -106,8 +106,8 @@ main	  : stat+ EOF
 	  | Semicolon
 	  ;
 
-stat: expr eos      				# MPLStatement
-;
+stat: (expr)? eos      				# MPLStatement
+      ;
 
 eos	: {isFromCmdLine()}? Semicolon | EOL
 	| {isFromFile()}? Semicolon
