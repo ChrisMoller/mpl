@@ -3,6 +3,8 @@
 class  Error {
 
 public:
+
+  
   // fixme: generate this and strings from common source
   enum
     {
@@ -27,6 +29,8 @@ public:
 
   void print ();
   void print (std::string cmt);
+
+  int get_errnr () { return error; }
 
 private:
   int error;

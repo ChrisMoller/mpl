@@ -66,7 +66,7 @@ do_monadic (antlrcpp::Any &rc, monadic_op op, antlrcpp::Any &right)
     rc = mtx;
   }
   else {
-    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", monadic");
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", monadic operation");
   }
 }
 
@@ -231,7 +231,7 @@ monadicShape (antlrcpp::Any &rc, antlrcpp::Any &right)
     rc = mtx->rho ();
   }
   else {
-    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", shape");
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", shape operation");
   }
 }
 
@@ -257,7 +257,7 @@ monadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &right)
       }
   }
   else {
-    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", transpose");
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", transpose operation");
   }
 }
 
@@ -277,7 +277,7 @@ monadicRange (antlrcpp::Any &rc, antlrcpp::Any &right)
     rc = array;
   }
   else {
-    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", range");
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", monadic range operation");
   }
 }
 
@@ -342,7 +342,7 @@ do_monadic_grade (antlrcpp::Any &rc, ety_sort_func func, antlrcpp::Any &right)
     rc = mtx;
   }
   else {
-    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", monadic");
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", grade operation");
   }
 }
 

@@ -28,8 +28,6 @@ static void
 do_dyadic  (antlrcpp::Any &rc, dyadic_op op,
 	    antlrcpp::Any &left, antlrcpp::Any &right)
 {
-  //  antlrcpp::Any  rc;
-  
   if (right.get_typeinfo() == typeid(double) &&
       left.get_typeinfo()  == typeid(double)) {
     double lv = left.as<double>();
@@ -102,7 +100,14 @@ do_dyadic  (antlrcpp::Any &rc, dyadic_op op,
     }
   }
   else {
-    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE);
+    std::cout << "stop here 2\n";
+    std::cout << "Left arg "
+		<< "(" << demangle (left) << ")"
+		<< std::endl;
+    std::cout << "Right arg "
+		<< "(" << demangle (right) << ")"
+		<< std::endl;
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic operation."); 
   }
 }
 
@@ -191,7 +196,7 @@ dyadicRange (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
     rc = array;
   }
   else {
-    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE);
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", range operation.");
   }
 }
 
@@ -289,7 +294,7 @@ do_test (antlrcpp::Any &rc, dyadic_test op,
     rc = array;
   }
   else {
-    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE);
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", comparisin operation.");
   }
 }
 

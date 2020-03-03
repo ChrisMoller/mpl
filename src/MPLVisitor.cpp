@@ -38,7 +38,7 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
   std::string latest_init;
   antlr4::tree::ParseTree *latest_pt = nullptr;
     
-  antlrcpp::Any rc;
+  antlrcpp::Any rc = Error (Error::ERROR_INTERNAL, " visitMPLProgramme");
 
   Programme *programme = new Programme (this);
 
@@ -151,7 +151,7 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
 antlrcpp::Any
 MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
 {
-  antlrcpp::Any rc;
+  antlrcpp::Any rc = Error(Error::ERROR_INTERNAL, " visitMPLIndex");
 #if 0
   std::cout << "n = "
 	    <<  ctx->children.size ()
@@ -397,7 +397,7 @@ MPLVisitor::visitMPLNumber(MPLParser::MPLNumberContext *ctx)
 antlrcpp::Any
 MPLVisitor::visitMPLParen(MPLParser::MPLParenContext *ctx)
 {
-  antlrcpp::Any rc;	// just to provide a null
+  antlrcpp::Any rc = Error(Error::ERROR_INTERNAL, " visitMPLParen");
   
   size_t n = ctx->children.size();
   
@@ -428,7 +428,7 @@ MPLVisitor::visitMPLMonadic(MPLParser::MPLMonadicContext *ctx)
   std::cout << indent << "Mo " << token->getText () << std::endl;
 #endif
   auto token_idx = token->getType();
-  antlrcpp::Any result;
+  antlrcpp::Any result = Error(Error::ERROR_INTERNAL, " visitMPLMonadic");
   
   size_t n = ctx->children.size();
   
@@ -480,7 +480,7 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
 	    << " depth = " << depth << std::endl;
 #endif
   auto token_idx = token->getType();
-  antlrcpp::Any result;
+  antlrcpp::Any result = Error(Error::ERROR_INTERNAL, " visitMPLDyadic");
   std::string *left_copy = nullptr;
 
   size_t n = ctx->children.size();
@@ -558,15 +558,19 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
 antlrcpp::Any
 MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
 {
+  antlrcpp::Any res;
+  antlrcpp::Any newres;
+  antlrcpp::Any rc = Error(Error::ERROR_NONE, ", statement");
   size_t n = ctx->children.size();
+  std::cout << "n = " << n << std::endl;
   for (size_t i = 0; i < n; i++) {
     last_token = MPLLexer::DUMMY;
     
 #ifdef SHOW_TRACE
     depth++;
 #endif
-    antlrcpp::Any res  = ctx->children[i]->accept(this);
-#ifdef SHOW_TYPES
+    res  = ctx->children[i]->accept(this);
+#if 0
     std::cout << "res " << i << " expr \"" << lexpr << "\""
 	      << " type \n\t"
 	      << "(" << demangle (res) << ")"
@@ -576,55 +580,52 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
     --depth;
 #endif
       
-    if (last_token != MPLLexer::OpEqual) {
-      if (res.isNotNull ()) {
-	if (res.get_typeinfo() == typeid(std::string)) {
-	  // FIXME : create a lookup that takes an Any
-	  std::string ss = res.as<std::string>();
-	  antlrcpp::Any newres = get_global_symtab ()->lookup (ss);
+    //    if (last_token != MPLLexer::OpEqual) {
+    if (res.isNotNull ()) {
+      if (res.get_typeinfo() == typeid(std::string)) {
+	// FIXME : create a lookup that takes an Any
+	std::string ss = res.as<std::string>();
+	newres = get_global_symtab ()->lookup (ss);
 	    
 #if SHOW_TYPES
-	  std::cout << "newres " << i << " expr \"" << lexpr << "\""
-		    << " type \n\t"
-		    << "(" << demangle (newres) << ")"
-		    << std::endl;
+	std::cout << "newres " << i << " expr \"" << lexpr << "\""
+		  << " type \n\t"
+		  << "(" << demangle (newres) << ")"
+		  << std::endl;
 #endif
 	  
-	  if (newres.isNull ())
+	if (newres.isNull ()) {
+	  if (last_token != MPLLexer::OpEqual)
 	    print_str (show, lexpr,ss);
-	  else {
-	    if  (newres.get_typeinfo() == typeid(Programme *)) {
-#if 1
-	      Programme *programme = newres.as<Programme *>();
-	      newres = programme->run (i);
-#else
-	      std::cout << "stop1\n";
-	      Programme *programme = newres.as<Programme *>();
-	      std::vector<antlr4::tree::ParseTree *>*stmts =
-		programme->get_stmts ();
-	      size_t n = stmts->size ();
-	      std::cout << "n = " << n << std::endl;
-	      for (size_t iii = i; iii < n; iii++) {
-		antlr4::tree::ParseTree *px = (*stmts)[iii];
-		antlr4::tree::ParseTreeVisitor *that = programme->get_this ();
-		antlrcpp::Any newres = px->accept (that);
-		print_val (newres);
-	      }
-#endif
-	    }
-	    print_val (show, lexpr, newres);
-	  }
-	}	
+	  rc = newres;
+	}
 	else {
-	  if  (res.get_typeinfo() == typeid(Programme *)) {
-	      std::cout << "stop2\n";
+	  if  (newres.get_typeinfo() == typeid(Programme *)) {
+	    Programme *programme = newres.as<Programme *>();
+	    newres = programme->run (0);
 	  }
-	  else print_val (show, lexpr, res);
+	  if (last_token != MPLLexer::OpEqual)
+	    print_val (show, lexpr, newres);
+	  rc = newres;
+	}
+      }		
+      else {
+	if  (res.get_typeinfo() == typeid(Programme *)) {
+	  //	  std::cout << "stop2\n";
+	  Programme *programme = newres.as<Programme *>();
+	  newres = programme->run (0);
+	  if (last_token != MPLLexer::OpEqual)
+	    print_val (show, lexpr, newres);
+	}
+	else {
+	  if (last_token != MPLLexer::OpEqual)
+	    print_val (show, lexpr, res);
 	}
       }
     }
+    //    }
   }
-  antlrcpp::Any rc = 0; // some sort of okay
   return rc;
 }
 
+  

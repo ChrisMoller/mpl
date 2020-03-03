@@ -102,13 +102,15 @@ options {
 
 // Actual grammar start.
 
-main	  : stat+ EOF;
+main	  : stat+ EOF
+	  | Semicolon
+	  ;
 
 stat: expr eos      				# MPLStatement
 ;
 
-eos	: {isFromCmdLine()}? Semicolon | EOL | EOF
-	| {isFromFile()}? Semicolon | EOF
+eos	: {isFromCmdLine()}? Semicolon | EOL
+	| {isFromFile()}? Semicolon
 	;
 
 
