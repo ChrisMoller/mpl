@@ -20,174 +20,7 @@
 
 /*** programs ***/
 
-/***
-
-
-    ./mpl -e '(ggga=7; f; g;){7+a; 8-f; 2*g;}'
-
-    0 (
-(
-toString 0 "("
-toTree (
-getText (
-
-1 a
-toString 1 "[50 21 14]"
-toTree (a a)
-getText a
-
-2 =
-toString 2 "="
-toTree =
-getText =
-
-3 7
-toString 3 "[52 21 14]"
-toTree (7 7)
-getText 7
-
-4 ;
-toString 4 ";"
-toTree ;
-getText ;
-
-5 f
-toString 5 "[50 21 14]"
-toTree (f f)
-getText f
-
-6 ;
-toString 6 ";"
-toTree ;
-getText ;
-
-7 g
-toString 7 "[50 21 14]"
-toTree (g g)
-getText g
-
-8 ;
-toString 8 ";"
-toTree ;
-getText ;
-
-9 )
-toString 9 ")"
-toTree )
-getText )
-
-10 {
-toString 10 "{"
-toTree {
-getText {
-
-11 7+a;
-toString 11 "[64 21 14]"
-toTree (7+a; (7+a (7 7) (+ +) (a (a a))) (; ;))
-getText 7+a;
-
-12 8-f;
-toString 12 "[64 21 14]"
-toTree (8-f; (8-f (8 8) (- -) (f (f f))) (; ;))
-getText 8-f;
-
-13 2*g;
-toString 13 "[64 21 14]"
-toTree (2*g; (2*g (2 2) (* *) (g (g g))) (; ;))
-getText 2*g;
-
-14 }
-toString 14 "}"
-toTree }
-getText }
-
-
-    ./mpl -e '(){7+a; 8-f; 2*g;}'
-
-    0 (
-(
-toString 0 "("
-toTree (
-getText (
-
-1 )
-toString 1 ")"
-toTree )
-getText )
-
-2 {
-toString 2 "{"
-toTree {
-getText {
-
-3 7+a;
-toString 3 "[64 21 14]"
-toTree (7+a; (7+a (7 7) (+ +) (a (a a))) (; ;))
-getText 7+a;
-
-4 8-f;
-toString 4 "[64 21 14]"
-toTree (8-f; (8-f (8 8) (- -) (f (f f))) (; ;))
-getText 8-f;
-
-5 2*g;
-toString 5 "[64 21 14]"
-toTree (2*g; (2*g (2 2) (* *) (g (g g))) (; ;))
-getText 2*g;
-
-6 }
-toString 6 "}"
-toTree }
-getText }
-
-
-    
- ***/
-
-
 // ./mpl -e 'pgm = (ggga=(7-9); f; g;){7+6; 8-2; 2*4;}; 8-777; pgm'
-
-#if 0
-class Programme {
-public:
-  Programme (antlr4::tree::ParseTreeVisitor *tx) {
-    that = tx;
-    stmts = new std::vector<antlr4::tree::ParseTree *>;
-  }
-  
-  void  update_symtab (std::string &param_name,
-		       std::string &init_string,
-		       antlr4::tree::ParseTree *&stmt)
-  {
-    if (!param_name.empty ()) {
-      antlrcpp::Any init = stmt;
-      programme_symtab.insert (param_name, init);
-    }
-    param_name.clear ();
-    init_string.clear ();
-    stmt = nullptr;
-  }
-
-  void push_statement (antlr4::tree::ParseTree *&stmt)
-  {
-    stmts->push_back (stmt);
-  }
-
-  antlr4::tree::ParseTreeVisitor *
-  get_this ()
-  {
-    return that;
-  }
-
-  std::vector<antlr4::tree::ParseTree *>*
-  get_stmts () {return stmts;}
-  
-private:
-  antlr4::tree::ParseTreeVisitor *that;
-  SymbolTable programme_symtab;
-  std::vector<antlr4::tree::ParseTree *>*stmts;
-};
-#endif
 
 typedef enum
   {
@@ -305,7 +138,7 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
   for (size_t i = i; i < n; i++) {
     antlr4::tree::ParseTree *px = (*stmts)[i];
     antlr4::tree::ParseTreeVisitor *that = programme->get_this ();
-    antlrcpp::Any rc = px->accept (that);
+    //    antlrcpp::Any rc = px->accept (that);
   }
 
   rc = programme;
@@ -352,10 +185,18 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
   if (value.get_typeinfo() == typeid(std::string)) {
     std::string ss = value.as<std::string>();
     value = get_global_symtab ()->lookup (ss);
+    if  (value.get_typeinfo() == typeid(Programme *)) {
+      Programme *programme = value.as<Programme *>();
+      value = programme->run (0);
+    }
   }
   if (index.get_typeinfo() == typeid(std::string)) {
     std::string ss = index.as<std::string>();
     index = get_global_symtab ()->lookup (ss);
+    if  (index.get_typeinfo() == typeid(Programme *)) {
+      Programme *programme = value.as<Programme *>();
+      index = programme->run (0);
+    }
   }
 
 
@@ -606,6 +447,10 @@ MPLVisitor::visitMPLMonadic(MPLParser::MPLMonadicContext *ctx)
   if (right_any.get_typeinfo() == typeid(std::string)) {
     std::string ss = right_any.as<std::string>();
     right_any = get_global_symtab ()->lookup (ss);
+    if  (right_any.get_typeinfo() == typeid(Programme *)) {
+      Programme *programme = right_any.as<Programme *>();
+      right_any = programme->run (0);
+    }
   }
 
   if (right_any.isNotNull ()) {
@@ -663,6 +508,10 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
     if (left_any.get_typeinfo() == typeid(std::string)) {
       std::string ss = left_any.as<std::string>();
       left_any = get_global_symtab ()->lookup (ss);
+      if  (left_any.get_typeinfo() == typeid(Programme *)) {
+	Programme *programme = left_any.as<Programme *>();
+	left_any = programme->run (0);
+      }
     }
   }
 
@@ -676,6 +525,10 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
   if (right_any.get_typeinfo() == typeid(std::string)) {
     std::string ss = right_any.as<std::string>();
     right_any = get_global_symtab ()->lookup (ss);
+    if  (right_any.get_typeinfo() == typeid(Programme *)) {
+      Programme *programme = right_any.as<Programme *>();
+      right_any = programme->run (0);
+    }
   }
 
   if (left_any.isNotNull () && right_any.isNotNull ()) {
@@ -741,6 +594,10 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
 	    print_str (show, lexpr,ss);
 	  else {
 	    if  (newres.get_typeinfo() == typeid(Programme *)) {
+#if 1
+	      Programme *programme = newres.as<Programme *>();
+	      newres = programme->run (i);
+#else
 	      std::cout << "stop1\n";
 	      Programme *programme = newres.as<Programme *>();
 	      std::vector<antlr4::tree::ParseTree *>*stmts =
@@ -750,8 +607,10 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
 	      for (size_t iii = i; iii < n; iii++) {
 		antlr4::tree::ParseTree *px = (*stmts)[iii];
 		antlr4::tree::ParseTreeVisitor *that = programme->get_this ();
-		antlrcpp::Any rc = px->accept (that);
+		antlrcpp::Any newres = px->accept (that);
+		print_val (newres);
 	      }
+#endif
 	    }
 	    print_val (show, lexpr, newres);
 	  }
