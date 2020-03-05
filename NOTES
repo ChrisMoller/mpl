@@ -17,7 +17,7 @@ extract 2d slices from 3d and greater ntxs
    matrix [inf inf k] -- extract all of the plane where d[0] == k
    matrix [inf j k] -- extract all of the row where d[1] = j && d[0] == k
 
-
+allow indexed mtx/vec let of assign
 
 https://stackoverflow.com/questions/38106771/antlr4-how-do-i-get-the-token-type-as-the-token-text-in-antlr
 

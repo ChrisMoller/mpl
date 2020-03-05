@@ -55,7 +55,7 @@ tokens {
 Number	          : '~'?(Real | Imag | Complex | NaN);
 fragment Complex  : Real[+\-]Imag ;
 fragment Imag	  : Real[ij] ;
-fragment Real	  : '.'Digit+ | Digit+('.'Digit*)?([Ee][+\-]?Digit+)? ;
+fragment Real	  : '.'Digit+ | Digit+('.'Digit*)?([Ee][~+\-]?Digit+)? ;
 fragment Digit	  : [0-9];
 fragment NaN	  : 'NAN' | 'NaN' | 'nan' | 'inf';
 

@@ -339,14 +339,11 @@ MPLVisitor::visitMPLVector(MPLParser::MPLVectorContext *ctx)
   for (size_t i = 0; i < n; i++) {
     tree::TerminalNode *ety = ctx->Number (i);
     Token *token = ety->getSymbol();
-    
-    int offset = 0;
-    if ('~' == token->getText()[0]) offset = 1;
+
     std::string str = token->getText ();
-    double val = std::stod(str.substr(offset));
-    if (offset == 1) val = -val;
+    std::replace (str.begin (), str.end (), '~', '-');
+    double val = std::stod(str);
     array->push_back (val);
-    //std::cout << "ety " << i << " = " << val << std::endl;
   }
 
   antlrcpp::Any value = array;
@@ -382,11 +379,10 @@ MPLVisitor::visitMPLNumber(MPLParser::MPLNumberContext *ctx)
   std::string indent = std::string (3 * depth, ' ');
   std::cout << indent << "Nr " << token->getText () << std::endl;
 #endif
-  int offset = 0;
-  if ('~' == token->getText()[0]) offset = 1;
+
   std::string str = token->getText ();
-  double val = std::stod(str.substr(offset));
-  if (offset == 1) val = -val;
+  std::replace (str.begin (), str.end (), '~', '-');
+  double val = std::stod(str);
   antlrcpp::Any value = val;
 
   return value;

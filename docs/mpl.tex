@@ -9,6 +9,11 @@
 \font\bigbx = cmbx10 scaled \magstep 2
 \font\bigrm = cmr10 scaled \magstep 2
 
+%\font\tenrm= cmbx10 scaled \magstep 2
+\textfont0=\vbigbx
+
+%\textfont0=\tenrm
+
 \newcount\fn
 \def\fnote{\global\advance\fn1
     \footnote{$^{\the\fn}$}}
@@ -29,7 +34,21 @@ always found it to be a Royal Pain$^{{\rm TM}}$ remembering the
 finger-tangling combination of ctrl-, shift-, and alt- keys needed on modern
 keyboards to get dominoes, quotequads, and whatnot.
 
-J, at least, avoids all that, but has its own weirdnesses
+J, at least, avoids all that, but has its own weirdnesses---it's not at all
+intuitive that ``1!:1 $<$'abc.q''' means ``read file abc.q''---and, though it
+may be a quibble on my part, the J default installation process and location
+is, uh, ``non-standard..''
+
+So, a few notes on {\bigsl MPL}...
+
+First,  {\bigsl MPL} behaves a lot like  {\bigsl APL}---it reads from right to
+left: the order of operation of
+$$a * b - c$$
+is
+$$a * (b - c)$$
+rather than the
+usual expectation,
+$$(a * b) - c$$
 
 \input general-ops-table
 \input comparison-ops-table

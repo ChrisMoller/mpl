@@ -1,17 +1,36 @@
 TEX=tex
-DVIPDF=dvipdfm
+LATEX=latex
+PDFLATEX=pdflatex
+DVIPDF=dvips -f < $< | ps2pdf - $@
 
-%.dvi:%.tex
-	$(TEX) $<
+
+SOURCES = comparison-ops-table.tex \
+          matrix-vector-ops-table.tex  \
+          trigonometric-ops-table.tex \
+          general-ops-table.tex \
+          mpl.tex
+
+%.pdf:%.ltx
+	$(PDFLATEX) $<
+	$(PDFLATEX) $<
+
+%.dvi:%.ltx
+	$(LATEX) $<
 	rm -f $(basename $<).log
 
-%.pdf:%.dvi
-	$(DVIPDF) $<
+#%.dvi:%.tex
+#	$(TEX) $<
 
-mpl.pdf: mpl.tex
+%.pdf:%.dvi
+	$(DVIPDF)
+
+mpl.pdf: mpl.ltx
+
+#mpl.pdf: mpl.dvi
+#mpl.dvi: $(SOURCES)
 
 clean:
-	rm -f *.dvi *.log
+	rm -f *.dvi *.log mpl.aux
 
 veryclean: clean
 	rm -f *.pdf
