@@ -8,7 +8,9 @@
 #include "Error.h"
 #include "main.h"
 
-static double fragmentProduct (double lv, double rv){return lv * rv;}
+static double fragmentProduct (double lv, double rv){
+  return lv * rv;
+}
 static double fragmentRatio   (double lv, double rv){return lv / rv;}
 static double fragmentSum     (double lv, double rv){return lv + rv;}
 static double fragmentDiff    (double lv, double rv){return lv - rv;}

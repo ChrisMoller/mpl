@@ -187,7 +187,7 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
     value = get_global_symtab ()->lookup (ss);
     if  (value.get_typeinfo() == typeid(Programme *)) {
       Programme *programme = value.as<Programme *>();
-      value = programme->run (0);
+      value = programme->run ();
     }
   }
   if (index.get_typeinfo() == typeid(std::string)) {
@@ -195,7 +195,7 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
     index = get_global_symtab ()->lookup (ss);
     if  (index.get_typeinfo() == typeid(Programme *)) {
       Programme *programme = value.as<Programme *>();
-      index = programme->run (0);
+      index = programme->run ();
     }
   }
 
@@ -445,7 +445,7 @@ MPLVisitor::visitMPLMonadic(MPLParser::MPLMonadicContext *ctx)
     right_any = get_global_symtab ()->lookup (ss);
     if  (right_any.get_typeinfo() == typeid(Programme *)) {
       Programme *programme = right_any.as<Programme *>();
-      right_any = programme->run (0);
+      right_any = programme->run ();
     }
   }
 
@@ -506,7 +506,7 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
       left_any = get_global_symtab ()->lookup (ss);
       if  (left_any.get_typeinfo() == typeid(Programme *)) {
 	Programme *programme = left_any.as<Programme *>();
-	left_any = programme->run (0);
+	left_any = programme->run ();
       }
     }
   }
@@ -523,7 +523,7 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
     right_any = get_global_symtab ()->lookup (ss);
     if  (right_any.get_typeinfo() == typeid(Programme *)) {
       Programme *programme = right_any.as<Programme *>();
-      right_any = programme->run (0);
+      right_any = programme->run ();
     }
   }
 
@@ -558,7 +558,7 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
   antlrcpp::Any newres;
   antlrcpp::Any rc = Error(Error::ERROR_NONE, ", statement");
   size_t n = ctx->children.size();
-  std::cout << "n = " << n << std::endl;
+  //  std::cout << "n = " << n << std::endl;
   for (size_t i = 0; i < n; i++) {
     last_token = MPLLexer::DUMMY;
     
@@ -598,7 +598,7 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
 	else {
 	  if  (newres.get_typeinfo() == typeid(Programme *)) {
 	    Programme *programme = newres.as<Programme *>();
-	    newres = programme->run (0);
+	    newres = programme->run ();
 	  }
 	  if (last_token != MPLLexer::OpEqual)
 	    print_val (show, lexpr, newres);
@@ -609,7 +609,7 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
 	if  (res.get_typeinfo() == typeid(Programme *)) {
 	  //	  std::cout << "stop2\n";
 	  Programme *programme = newres.as<Programme *>();
-	  newres = programme->run (0);
+	  newres = programme->run ();
 	  if (last_token != MPLLexer::OpEqual)
 	    print_val (show, lexpr, newres);
 	}
