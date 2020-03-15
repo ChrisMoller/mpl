@@ -386,6 +386,66 @@ monadicInverse (antlrcpp::Any &rc, antlrcpp::Any &right)
   }
 }
 
+static void
+monadicSum (antlrcpp::Any &rc, antlrcpp::Any &right)
+{
+  if (right.get_typeinfo() == typeid(double)) {
+    double rv = right.as<double>();
+    rc = rv;
+  }
+  else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
+    std::vector<double> *right_vec = right.as<std::vector<double>*>();
+    double rv = 0.0;
+    for (auto rp = (*right_vec).begin (); rp != (*right_vec).end (); rp++)
+      rv += (*rp);
+    rc = rv;
+  }
+  else if (right.get_typeinfo() == typeid(Matrix*)) {
+    Matrix *rv  = right.as<Matrix *>();
+    double res = rv->sum ();
+
+    if (!std::isnan (res))  rc = res;
+    else {
+      rc = Error(Error::ERROR_FAILED_INVERSE);
+      std::string em = rv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", sum operation");
+  }
+}
+
+static void
+monadicProduct (antlrcpp::Any &rc, antlrcpp::Any &right)
+{
+  if (right.get_typeinfo() == typeid(double)) {
+    double rv = right.as<double>();
+    rc = rv;
+  }
+  else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
+    std::vector<double> *right_vec = right.as<std::vector<double>*>();
+    double rv = 1.0;
+    for (auto rp = (*right_vec).begin (); rp != (*right_vec).end (); rp++)
+      rv *= (*rp);
+    rc = rv;
+  }
+  else if (right.get_typeinfo() == typeid(Matrix*)) {
+    Matrix *rv  = right.as<Matrix *>();
+    double res = rv->product ();
+
+    if (!std::isnan (res))  rc = res;
+    else {
+      rc = Error(Error::ERROR_FAILED_INVERSE);
+      std::string em = rv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", product operation");
+  }
+}
+
 static mfunc mfuncs[] =
 {
  nullptr,	// empty	 0
@@ -440,6 +500,8 @@ static mfunc mfuncs[] =
  nullptr,	// OpQBangRightAngleEqual	49
  monadicDeterminant,	// OpDet		50
  monadicInverse,	// OpBSSlash		51
+ monadicSum,		// OpSlashPlus		52
+ monadicProduct,	// OpSlashStar		53
 };
 
 mfunc

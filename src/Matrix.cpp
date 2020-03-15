@@ -218,6 +218,7 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
   }
   return nullptr; 
 }
+
 std::vector<double> *
 Matrix::solve (int direction, std::vector<double> *vec)
 {
@@ -497,6 +498,36 @@ Matrix *
 Matrix::transpose ()
 {
   return do_transpose (nullptr, this);
+}
+
+double
+Matrix::sum ()
+{
+  double rc = NAN;
+  if (data->size () > 0) {
+    rc = 0.0;
+    for (auto rp = (*data).begin (); rp != (*data).end (); rp++)
+      rc += (*rp);
+  }
+  else {
+    set_errmsg (std::string ("Empty matrix"));
+  }
+  return rc;
+}
+
+double
+Matrix::product ()
+{
+  double rc = NAN;
+  if (data->size () > 0) {
+    rc = 1.0;
+    for (auto rp = (*data).begin (); rp != (*data).end (); rp++)
+      rc *= (*rp);
+  }
+  else {
+    set_errmsg (std::string ("Empty matrix"));
+  }
+  return rc;
 }
 
 double

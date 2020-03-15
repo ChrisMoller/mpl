@@ -59,6 +59,9 @@ do_dyadic  (antlrcpp::Any &rc, dyadic_op op,
       Matrix *mtx = new Matrix (op, lv, rv);
       rc = mtx;
     }
+    else {
+      rc = Error(Error::ERROR_DIMENSION_MISMATCH);
+    }
   }
   else if (right.get_typeinfo() == typeid(std::vector<double>*) &&
 	   left.get_typeinfo()  == typeid(double)) {
@@ -542,7 +545,9 @@ static dfunc dfuncs[] =
  dyadicTestGT,	// OpQBangLeftAngleEqual	48
  dyadicTestLT,	// OpQBangRightAngleEqual	49
  nullptr,	// OpDet			50
- dyadicMatSolve,	// OpBSSlash			51
+ dyadicMatSolve,	// OpBSSlash		51
+ nullptr,		// OpSlashPlus		52
+ nullptr,		// OpSlashStar		53
 };
 
 dfunc

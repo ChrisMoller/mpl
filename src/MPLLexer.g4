@@ -108,6 +108,8 @@ OpQBangLeftAngleEqual	: '?!<=';
 OpQBangRightAngleEqual	: '?!>=';
 OpDet			: 'det';
 OpBSSlash		: '\\/';
+OpSlashPlus		: '/+';
+OpSlashStar		: '/*';
 
 And		: 'and';
 Semicolon	: ';';

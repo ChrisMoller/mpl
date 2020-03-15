@@ -26,6 +26,8 @@ public:
   bool isomorphic (Matrix *rv);
   Matrix * inverse ();
   double determinant ();
+  double sum ();
+  double product ();
   Matrix * transpose ();
   Matrix * transpose (antlrcpp::Any &permutation);
   Matrix * multiply (Matrix *);

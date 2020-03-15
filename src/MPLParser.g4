@@ -205,6 +205,8 @@ op	: OpStar
 	| OpBSStar
 	| OpDet
 	| OpBSSlash
+	| OpSlashPlus
+	| OpSlashStar
 	;
 
 id	: ID;
