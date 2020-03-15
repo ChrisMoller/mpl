@@ -93,7 +93,7 @@ Matrix::Matrix (dyadic_op op, Matrix *lv, Matrix *rv)
 
 Matrix::~Matrix ()
 {
-  //  std::cout << "deleting\n";
+  std::cout << "deleting matrix\n";
   delete dims;
   delete data;
 }
@@ -208,6 +208,7 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
     std::vector<double> *data = mtx->get_data ();
     for (int i = 0; i < new_data->size (); i++) {
       int to = tc.get_next_index ();
+      std::cout << " to = " << to << std::endl;
       (*new_data)[to] = (*data)[i];
     }
 

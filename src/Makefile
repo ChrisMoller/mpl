@@ -696,8 +696,8 @@ MPLParser.h MPLParser.cpp  : MPLParser.g4
 #    --suppressions=valgrind.supp
 #VALGRIND_FLAGS = --gen-suppressions=all --run-libc-freeres=yes
 
-valgrind.log : clc
-	valgrind $(VALGRIND_FLAGS) --log-file=$@ ./clc
+valgrind.log : mpl
+	valgrind $(VALGRIND_FLAGS) --log-file=$@ ./mpl  -e '(2 0 1) $ (2 3 4#1::24);' 
 
 save:
 	gitpush

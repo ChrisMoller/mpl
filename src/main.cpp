@@ -46,13 +46,22 @@ antlrcpp::Any::~Any ()
        (Both are unlikely, but you  never know...)
        
    ****/
+
+  //  std::cout << "Any free " << std::cout;
   
-  if (this->get_typeinfo() == typeid(std::vector<double>*) || 
-      this->get_typeinfo() == typeid(std::vector<bool>*)   ||
-      this->get_typeinfo() == typeid(std::vector<size_t>*) ||
-      this->get_typeinfo() == typeid(Matrix*)	           ||
-      this->get_typeinfo() == typeid(std::string*))
-    this->clear ();
+  if (this) {
+    if (this->get_typeinfo() == typeid(Matrix*)) {
+      Matrix *rv = this->as<Matrix *>();
+      delete rv;
+    }
+    if (this->get_typeinfo() == typeid(std::vector<double>*) || 
+	this->get_typeinfo() == typeid(std::vector<bool>*)   ||
+	this->get_typeinfo() == typeid(std::vector<size_t>*) ||
+	this->get_typeinfo() == typeid(Matrix*)	           ||
+	this->get_typeinfo() == typeid(std::string*)) {
+      this->clear ();
+    }
+  }
 }
 
 void

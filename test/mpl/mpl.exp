@@ -9,6 +9,13 @@ set mmpmv      "(3 2 #::6)\\*1 2"
 set solvemm    "(2 2#4::7) \\/ 2 2#1::4"
 set solvemv    "(2 2#4::7) \\/ 1::2"
 set solvevm    "(1 2) \\/ (2 2#4::7)"
+set summtx     "/+2 3#::6"
+set sumvec     "/+::6"
+set sumscalar  "/+6"
+set prodmtx     "/*2 3#1::6"
+set prodvec     "/*1::6"
+set prodscalar  "/*6"
+set tpose       "$ 2 3#1::6"
 
 # matrix[vector]
 set index1 "a=2 3#::6; a\[ 1 1 \]"
@@ -25,12 +32,15 @@ set index4 "a=::6; a\[ 2 2#::4 \]"
 # matrix[matrix]           TODO
 
 #set xfail_flag 1
-#
-# note that in te following, the operation "transpose" is really supposed
-# to be a dollar sign, but i can't figure out how to make tcl emit a dollar
-# sign.
-#
+
 set testdata {
+    {"\"$tpose\""   ".*\n1 4.*\n2 5.*\n3 6"}
+    {"\"$prodscalar\""   "6"}
+    {"\"$prodvec\""   "720"}
+    {"\"$prodmtx\""   "720"}
+    {"\"$sumscalar\""   "6"}
+    {"\"$sumvec\""   "15"}
+    {"\"$summtx\""   "15"}
     {"\"$solvemv\""   "16 19"}
     {"\"$solvevm\""   "14 20"}
     {"\"$solvemm\""   ".*\n-0.5 1.5.*\n-1.5 2.5"}
