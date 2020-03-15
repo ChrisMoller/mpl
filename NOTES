@@ -19,6 +19,8 @@ extract 2d slices from 3d and greater ntxs
 
 allow indexed mtx/vec let of assign
 
+in pgm, switch to local symtab and invent cascade to higher level symtabs
+
 https://stackoverflow.com/questions/38106771/antlr4-how-do-i-get-the-token-type-as-the-token-text-in-antlr
 
 4

@@ -1,6 +1,12 @@
 #ifndef MAIN_H
 #define MAIN_H
 #include <cxxabi.h>
+#include <antlr4-runtime.h>
+
+#pragma once
+
+#include "SymbolTable.h"
+
 
 #ifndef demangle
 #define demangle(res)  abi::__cxa_demangle(res.get_typeinfo().name(), \
@@ -22,4 +28,10 @@ typedef enum
 source_e get_source ();
 bool     isFromFile ();
 bool     isFromCmdLine ();
+
+void push_symbol_table (SymbolTable *st);
+void pop_symbol_table ();
+void insert_symbol_value (std::string sym, antlrcpp::Any &val);
+antlrcpp::Any get_symbol_value (std::string sym);
+
 #endif // MAIN_H

@@ -118,7 +118,6 @@ print_val (bool show, std::string lexpr, antlrcpp::Any &res)
       // do nothing
     }	
     else {
-      std::cout << "stop here\n";
       std::cout << "Unknown type in print fcn "
 		<< "(" << demangle (res) << ")"
 		<< std::endl;

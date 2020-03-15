@@ -102,13 +102,6 @@ do_dyadic  (antlrcpp::Any &rc, dyadic_op op,
     }
   }
   else {
-    std::cout << "stop here 2\n";
-    std::cout << "Left arg "
-		<< "(" << demangle (left) << ")"
-		<< std::endl;
-    std::cout << "Right arg "
-		<< "(" << demangle (right) << ")"
-		<< std::endl;
     rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic operation."); 
   }
 }
@@ -172,7 +165,8 @@ dyadicEqual (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 {
   if (left.get_typeinfo() == typeid(std::string *)) {
     std::string *sym = left.as<std::string *>();
-    get_global_symtab ()->insert (*sym, right);
+    insert_symbol_value (*sym, right);
+    //    get_global_symtab ()->insert (*sym, right);
   }
   else {
     std::cout << "Lvalue can't be a constant.\n";

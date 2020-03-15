@@ -40,6 +40,12 @@ ANTLRFLAGS = -visitor -listener
 
 ANTLRJAR = /home/moller/javastuff/antlr-4.8-complete.jar
 
+install-exec-hook:
+	(cd ${bindir}; $(LN_S) mpl$(EXEEXT) mple$(EXEEXT))
+
+uninstall-hook:
+	(cd ${bindir}; rm -f  mple$(EXEEXT))
+
 MPLLexer.h MPLLexer.cpp  : MPLLexer.g4
 	java  -jar $(ANTLRJAR) -Dlanguage=Cpp $(ANTLRFLAGS) \
            -package mpl $<

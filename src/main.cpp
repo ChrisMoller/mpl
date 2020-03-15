@@ -20,6 +20,10 @@
 
 #include "Matrix.h"
 
+static SymbolTable *global_symbol_table = nullptr;
+
+static std::vector<SymbolTable *> *symbol_stack = nullptr;
+
 static source_e current_source;
 
 source_e get_source () { return current_source; }
@@ -51,6 +55,32 @@ antlrcpp::Any::~Any ()
     this->clear ();
 }
 
+void
+push_symbol_table (SymbolTable *st)
+{
+  symbol_stack->push_back (st);
+}
+
+void
+pop_symbol_table ()
+{
+  symbol_stack->pop_back ();
+}
+
+void
+insert_symbol_value (std::string sym, antlrcpp::Any &val)
+{
+  SymbolTable *current_st =  symbol_stack->back ();
+  current_st->insert (sym, val);
+}
+
+antlrcpp::Any
+get_symbol_value (std::string sym)
+{
+  SymbolTable *current_st =  symbol_stack->back ();
+  return current_st->lookup (sym);
+}
+
 static void
 do_eval (source_e src, bool show, std::string str)
 {
@@ -70,6 +100,7 @@ do_eval (source_e src, bool show, std::string str)
   }
 #endif
 
+  
   MPLParser parser(&tokens);
   tree::ParseTree* tree = parser.main();
   std::vector<tree::ParseTree *> children = tree->children;
@@ -88,19 +119,42 @@ static int test_mode = 0;
 
 bool isTestMode () {bool rc = test_mode ? true : false; return rc; }
 
+static void
+eval_string (char *optarg)
+{
+  if (optarg[0] == '\'' &&
+      optarg[strlen (optarg) -1] == '\'') {
+    optarg[strlen (optarg) -1] = 0;
+    do_eval (SOURCE_CMDLINE, false, &optarg[1]);
+  }
+  else do_eval (SOURCE_CMDLINE, false, optarg);
+}
+
 int
 main (int ac, char *av[])
 {
+  bool eval_mode = !strcmp (basename (av[0]), "mple");
+  
   srand(static_cast<unsigned int>(clock()));
   int opt;
   
+  symbol_stack = new std::vector<SymbolTable *>;
+
+  global_symbol_table = new SymbolTable ();
+  push_symbol_table (global_symbol_table);
+
   {
     antlrcpp::Any pi = M_PI;
     antlrcpp::Any e  = M_E;
+#if 1
+    insert_symbol_value ("pi", pi);
+    insert_symbol_value ("e",  e);
+#else
     get_global_symtab ()->insert ("pi", pi);
     get_global_symtab ()->insert ("e",  e);
+#endif
   }
-
+  
   bool show_exp = false;
   struct option options[] =
     {
@@ -117,14 +171,7 @@ main (int ac, char *av[])
       std::cout << "Help!!\n";
       break;
     case 'e':
-      {
-	if (optarg[0] == '\'' &&
-	    optarg[strlen (optarg) -1] == '\'') {
-	  optarg[strlen (optarg) -1] = 0;
-	  do_eval (SOURCE_CMDLINE, false, &optarg[1]);
-	}
-        else do_eval (SOURCE_CMDLINE, false, optarg);
-      }
+      eval_string (optarg);
       break;
     case 's':
       show_exp = true;
@@ -137,17 +184,21 @@ main (int ac, char *av[])
 
   if (optind < ac) {
     for (int i = optind; i < ac; i++) {
-      //      std::cout << "reading \"" << av[i] << "\"";
-      std::ifstream file(av[i]);
-      if (file.is_open ()) {
-	std::stringstream buffer;
-	buffer << file.rdbuf();
-	std::string str = buffer.str ();
-	if (!str.empty ()) {
-	  do_eval (SOURCE_FILE, show_exp, str);
-	}
+      if (eval_mode) {
+	eval_string (av[i]);
       }
-      else std::cerr << "open failed\n";
+      else {
+	std::ifstream file(av[i]);
+	if (file.is_open ()) {	
+	  std::stringstream buffer;
+	  buffer << file.rdbuf();
+	  std::string str = buffer.str ();
+	  if (!str.empty ()) {
+	    do_eval (SOURCE_FILE, show_exp, str);
+	  }
+	}
+	else std::cerr << "open failed\n";
+      }
 
 
 #if 0
@@ -157,7 +208,6 @@ main (int ac, char *av[])
 	 while (! file.eof() ) {
 	   getline (file, str);
 	   if (!str.empty ()) {
-	     std::cout << "line " << i++ << ": " << str <<  std::endl;
 	     do_eval (SOURCE_FILE, show_exp, str);
 	   }
 	 }

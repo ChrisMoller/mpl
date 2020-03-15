@@ -22,6 +22,8 @@
 
 // ./mpl -e 'pgm = (ggga=(7-9); f; g;){7+6; 8-2; 2*4;}; 8-777; pgm'
 
+//  ./mpl -e 'pgm = (gg = 6;){gg;}; pgm;' 
+
 typedef enum
   {
    STATE_WAITING_FOR_PARAMS,	      
@@ -184,7 +186,7 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
 
   if (value.get_typeinfo() == typeid(std::string)) {
     std::string ss = value.as<std::string>();
-    value = get_global_symtab ()->lookup (ss);
+    value = get_symbol_value (ss);
     if  (value.get_typeinfo() == typeid(Programme *)) {
       Programme *programme = value.as<Programme *>();
       value = programme->run ();
@@ -192,7 +194,7 @@ MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
   }
   if (index.get_typeinfo() == typeid(std::string)) {
     std::string ss = index.as<std::string>();
-    index = get_global_symtab ()->lookup (ss);
+    index = get_symbol_value (ss);
     if  (index.get_typeinfo() == typeid(Programme *)) {
       Programme *programme = value.as<Programme *>();
       index = programme->run ();
@@ -442,7 +444,7 @@ MPLVisitor::visitMPLMonadic(MPLParser::MPLMonadicContext *ctx)
 #endif
   if (right_any.get_typeinfo() == typeid(std::string)) {
     std::string ss = right_any.as<std::string>();
-    right_any = get_global_symtab ()->lookup (ss);
+    right_any = get_symbol_value (ss);
     if  (right_any.get_typeinfo() == typeid(Programme *)) {
       Programme *programme = right_any.as<Programme *>();
       right_any = programme->run ();
@@ -503,7 +505,7 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
   else {
     if (left_any.get_typeinfo() == typeid(std::string)) {
       std::string ss = left_any.as<std::string>();
-      left_any = get_global_symtab ()->lookup (ss);
+      left_any = get_symbol_value (ss);
       if  (left_any.get_typeinfo() == typeid(Programme *)) {
 	Programme *programme = left_any.as<Programme *>();
 	left_any = programme->run ();
@@ -520,7 +522,7 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
 #endif
   if (right_any.get_typeinfo() == typeid(std::string)) {
     std::string ss = right_any.as<std::string>();
-    right_any = get_global_symtab ()->lookup (ss);
+    right_any = get_symbol_value (ss);
     if  (right_any.get_typeinfo() == typeid(Programme *)) {
       Programme *programme = right_any.as<Programme *>();
       right_any = programme->run ();
@@ -581,13 +583,13 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
       if (res.get_typeinfo() == typeid(std::string)) {
 	// FIXME : create a lookup that takes an Any
 	std::string ss = res.as<std::string>();
-	newres = get_global_symtab ()->lookup (ss);
+	newres = get_symbol_value (ss);
 	    
-#if SHOW_TYPES
+#if 0
 	std::cout << "newres " << i << " expr \"" << lexpr << "\""
 		  << " type \n\t"
 		  << "(" << demangle (newres) << ")"
-		  << std::endl;
+		  << "at " << __FILE__ ", " << __LINE__ << std::endl;
 #endif
 	  
 	if (newres.isNull ()) {
@@ -595,6 +597,13 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
 	    print_str (show, lexpr,ss);
 	  rc = newres;
 	}
+#if 0
+	else if (newres.get_typeinfo() == typeid(antlr4::tree::ParseTree*)) {
+	  antlr4::tree::ParseTree *tree =
+	    newres.as<antlr4::tree::ParseTree *>();
+	  newres = tree->accept (this);
+	}
+#endif
 	else {
 	  if  (newres.get_typeinfo() == typeid(Programme *)) {
 	    Programme *programme = newres.as<Programme *>();
@@ -607,7 +616,6 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
       }		
       else {
 	if  (res.get_typeinfo() == typeid(Programme *)) {
-	  //	  std::cout << "stop2\n";
 	  Programme *programme = newres.as<Programme *>();
 	  newres = programme->run ();
 	  if (last_token != MPLLexer::OpEqual)

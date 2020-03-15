@@ -2,6 +2,7 @@ AC_INIT([mpl], [1.0], [moller@mollerware.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PROG_CXX
 AC_PROG_CXX_C_O
+AC_PROG_LN_S
 AC_CONFIG_HEADERS([config.h])
 
 AM_MAINTAINER_MODE([enable])
