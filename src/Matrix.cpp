@@ -579,10 +579,17 @@ Matrix::inverse ()
  bool
  Matrix::isomorphic (Matrix *rv)
  {
-   return 
-     dims->size () == rv->dims->size () &&
-     data->size () == rv->data->size () &&
-     dims == rv->dims;
+   bool rc = false;
+   if (dims->size () == rv->dims->size () &&
+       data->size () == rv->data->size ()) {
+     size_t i;
+     for (i = 0; i < dims->size (); i++) {
+       if (dims[i] != rv->dims[i]) break;
+     }
+     if (i == (dims->size () - 1))
+       rc = true;
+   }
+   return rc;
  }
 
 void
