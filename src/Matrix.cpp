@@ -98,85 +98,6 @@ Matrix::~Matrix ()
   delete data;
 }
 
-/***
-                            
-    rho[0] rho[1] rho[2]     irho[0] irho[1] irho[2]
-      2      3      4           2      4       3   
-
-    p[0]   p[1]   p[2] 
-      0      1      2  
-
-    ip[0]    ip[1]   ip[2]
-      0        2       1
-
-      a b c d                  a e i    0  4  8
-      e f g h                  b f j    1  5  9
-      i j k l                  c g k    2  6 10
-                               d h l    3  7 11
-      m n o p                    
-      q r s t                  m q u   12 16 20
-      u v w x                  n r v   13 17 21
-                               o s w   14 18 22
-			       p t x   15 19 23
-
-			       
-    incr[1] = incr[p[2] =  1
-    incr[0] = incr[p[1] =  4 = rho[2]         
-    incr[2] = incr[p[0] = 12 = rho[2] * rho[1]
-
-    incr[0] = 12
-    incr[1] =  1
-    incr[2] =  4
-
-                       i  
-    trip[0]    = 12 = 12 (2 - 1)
-    trip[1]    =  3 =  1 (4 - 1)
-    trip[2]    =  8 =  4 (3 - 1)
-
-                        i  r
-    trip[0]    =  24 = 12 (2) = incr[0] * irho[0]
-    trip[1]    =   4 =  1 (4) = incr[1] * irho[1]
-    trip[2]    =  12 =  4 (3) = ince[2] * irho[2]
-
-
-                             
-
-			       
-
-    mpy[1] = mpy[p[2] =  1
-    mpy[2] = mpy[p[1] =  4 = rho[2]          = irho[1]
-    mpy[0] = mpy[p[0] = 12 = rho[2] * rho[1] = irho[1] * irho[2]
-
-           0 1 2
-    mpy : 12 1 4
-
-
-
-	mpy[2] * ctr[2]  + mpy[1] *  ctr[1] + mpy[0] * ctr[0]
-	    
-       [0] [1] [2]        
-	0   0   0	  0  4(0) + 1(0) + 12(0)
-	0   0   1	  4  4(1) + 1(0) + 12(0)
-	0   0   2	  8  4(2) + 1(0) + 12(0)
-	0   1   0	  1  4(0) + 1(1) + 12(0) 
-
-	0   1   1	  5  4(1) + 1(1) + 12(0)
-	0   1   2	  9  4(2) + 1(1) + 12(0)
-	0   2   0	  2  4(0) + 1(2) + 12(0)
-	0   2   1	  6  4(1) + 1(2) + 12(0)
-
-	0   2   2	 10  4(2) + 1(2) + 12(0)
-	0   3   0	  3  4(0) + 1(3) + 12(0)
-	0   3   1	  7  4(1) + 1(3) + 12(0)
-	0   3   2	 11  4(2) + 1(3) + 12(0)
-
-	1   0   0	 12  4(0) + 1(0) + 12(1)
-	1   0   1	 16  4(1) + 1(0) + 12(1)
-	1   0   2	 20  4(2) + 1(0) + 12(1)
-	1   1   0	 13  4(0) + 1(1) + 12(1)
-
- ***/
-
 class DimCounter
 {
 public:
@@ -185,63 +106,20 @@ public:
 	      std::vector<size_t> *iperm)	// 2 0 1
   {
     rhorho = rho->size ();
-#if 0
-    std::cout << "rho[0 1 2] = ";
-    for (int i = 0; i < rhorho; i++) 
-      std::cout << (*rho)[i] << " ";
-    std::cout << std::endl;
-#endif
-#if 0
-    std::cout << "irho[0 1 2 = ";
-    for (int i = 0; i < rhorho; i++) 
-      std::cout << (*irho)[i] << " ";
-    std::cout << std::endl;
-#endif
-#if 0
-    std::cout << "iperm[0 1 2] = ";
-    for (int i = 0; i < rhorho; i++) 
-      std::cout << (*iperm)[i] << " ";
-    std::cout << std::endl;
-#endif
-
     ctrs.resize (rhorho, 0);
-    
+
     nperm.resize (rhorho, 0);
     for (int i = 0, j = rhorho - 1; i < rhorho; i++, j--)
       nperm[i] = (*iperm)[j];
-#if 0
-    std::cout << "nperm[0 1 2] = ";
-    for (int i = 0; i < rhorho; i++) 
-      std::cout << nperm[i] << " ";
-    std::cout << std::endl;
-#endif
-
     
     incr.resize (rhorho, 0);
     incr[(*iperm)[rhorho - 1]] = 1;
     for (int i =  rhorho - 2; i >= 0; i--) 
       incr[(*iperm)[i]] = incr[(*iperm)[i+1]] * (*rho)[i+1];
-#if 0
-    std::cout << "incr[ 0 1 2] = ";
-    for (int i = 0; i < rhorho; i++) 
-      std::cout << incr[i] << " ";
-    std::cout << std::endl;
-#endif
 
-    
     trip.resize (rhorho, 0);
-    for (int i = 0, j = rhorho - 1; i < rhorho; i++, j--) {
-      //      std::cout << "[" << i << "] : "
-      //	<< incr[i] << " * " << (*irho)[j] << std::endl;;
+    for (int i = 0, j = rhorho - 1; i < rhorho; i++, j--)
       trip[i] = incr[i] * (*irho)[j];
-    }
-#if 0
-    std::cout << "trip[0 1 2] = ";
-    for (int i = 0; i < rhorho; i++) 
-      std::cout << trip[i] << " ";
-    std::cout << std::endl;
-#endif
-
   }
   
   size_t get_next_index ()
