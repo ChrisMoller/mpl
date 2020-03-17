@@ -93,60 +93,183 @@ Matrix::Matrix (dyadic_op op, Matrix *lv, Matrix *rv)
 
 Matrix::~Matrix ()
 {
-  std::cout << "deleting matrix\n";
+  //  std::cout << "deleting matrix\n";
   delete dims;
   delete data;
 }
 
+/***
+                            
+    rho[0] rho[1] rho[2]     irho[0] irho[1] irho[2]
+      2      3      4           2      4       3   
+
+    p[0]   p[1]   p[2] 
+      0      1      2  
+
+    ip[0]    ip[1]   ip[2]
+      0        2       1
+
+      a b c d                  a e i    0  4  8
+      e f g h                  b f j    1  5  9
+      i j k l                  c g k    2  6 10
+                               d h l    3  7 11
+      m n o p                    
+      q r s t                  m q u   12 16 20
+      u v w x                  n r v   13 17 21
+                               o s w   14 18 22
+			       p t x   15 19 23
+
+			       
+    incr[1] = incr[p[2] =  1
+    incr[0] = incr[p[1] =  4 = rho[2]         
+    incr[2] = incr[p[0] = 12 = rho[2] * rho[1]
+
+    incr[0] = 12
+    incr[1] =  1
+    incr[2] =  4
+
+                       i  
+    trip[0]    = 12 = 12 (2 - 1)
+    trip[1]    =  3 =  1 (4 - 1)
+    trip[2]    =  8 =  4 (3 - 1)
+
+                        i  r
+    trip[0]    =  24 = 12 (2) = incr[0] * irho[0]
+    trip[1]    =   4 =  1 (4) = incr[1] * irho[1]
+    trip[2]    =  12 =  4 (3) = ince[2] * irho[2]
+
+
+                             
+
+			       
+
+    mpy[1] = mpy[p[2] =  1
+    mpy[2] = mpy[p[1] =  4 = rho[2]          = irho[1]
+    mpy[0] = mpy[p[0] = 12 = rho[2] * rho[1] = irho[1] * irho[2]
+
+           0 1 2
+    mpy : 12 1 4
+
+
+
+	mpy[2] * ctr[2]  + mpy[1] *  ctr[1] + mpy[0] * ctr[0]
+	    
+       [0] [1] [2]        
+	0   0   0	  0  4(0) + 1(0) + 12(0)
+	0   0   1	  4  4(1) + 1(0) + 12(0)
+	0   0   2	  8  4(2) + 1(0) + 12(0)
+	0   1   0	  1  4(0) + 1(1) + 12(0) 
+
+	0   1   1	  5  4(1) + 1(1) + 12(0)
+	0   1   2	  9  4(2) + 1(1) + 12(0)
+	0   2   0	  2  4(0) + 1(2) + 12(0)
+	0   2   1	  6  4(1) + 1(2) + 12(0)
+
+	0   2   2	 10  4(2) + 1(2) + 12(0)
+	0   3   0	  3  4(0) + 1(3) + 12(0)
+	0   3   1	  7  4(1) + 1(3) + 12(0)
+	0   3   2	 11  4(2) + 1(3) + 12(0)
+
+	1   0   0	 12  4(0) + 1(0) + 12(1)
+	1   0   1	 16  4(1) + 1(0) + 12(1)
+	1   0   2	 20  4(2) + 1(0) + 12(1)
+	1   1   0	 13  4(0) + 1(1) + 12(1)
+
+ ***/
+
 class DimCounter
 {
 public:
-  DimCounter (std::vector<size_t> *irho, std::vector<size_t> *iperm)
+  DimCounter (std::vector<size_t>* rho,		// 2 3 4
+	      std::vector<size_t> *irho,	// 2 4 3
+	      std::vector<size_t> *iperm)	// 2 0 1
   {
-    rho  = irho;
-    perm = iperm;
-    size_t rhorho = rho->size ();
-    ctr.resize (rhorho);
-    stride.resize (rhorho);
-    size_t mpy = 1;
-    size_t p = (*perm)[rhorho - 1];
-    stride[p] = 1;
-    for (int ix = rhorho - 2; ix >=0; ix--) {
-      p = (*perm)[ix];
-      mpy = stride[p] = mpy * (*rho)[ix + 1];
-    }
-  }
+    rhorho = rho->size ();
+#if 0
+    std::cout << "rho[0 1 2] = ";
+    for (int i = 0; i < rhorho; i++) 
+      std::cout << (*rho)[i] << " ";
+    std::cout << std::endl;
+#endif
+#if 0
+    std::cout << "irho[0 1 2 = ";
+    for (int i = 0; i < rhorho; i++) 
+      std::cout << (*irho)[i] << " ";
+    std::cout << std::endl;
+#endif
+#if 0
+    std::cout << "iperm[0 1 2] = ";
+    for (int i = 0; i < rhorho; i++) 
+      std::cout << (*iperm)[i] << " ";
+    std::cout << std::endl;
+#endif
 
+    ctrs.resize (rhorho, 0);
+    
+    nperm.resize (rhorho, 0);
+    for (int i = 0, j = rhorho - 1; i < rhorho; i++, j--)
+      nperm[i] = (*iperm)[j];
+#if 0
+    std::cout << "nperm[0 1 2] = ";
+    for (int i = 0; i < rhorho; i++) 
+      std::cout << nperm[i] << " ";
+    std::cout << std::endl;
+#endif
+
+    
+    incr.resize (rhorho, 0);
+    incr[(*iperm)[rhorho - 1]] = 1;
+    for (int i =  rhorho - 2; i >= 0; i--) 
+      incr[(*iperm)[i]] = incr[(*iperm)[i+1]] * (*rho)[i+1];
+#if 0
+    std::cout << "incr[ 0 1 2] = ";
+    for (int i = 0; i < rhorho; i++) 
+      std::cout << incr[i] << " ";
+    std::cout << std::endl;
+#endif
+
+    
+    trip.resize (rhorho, 0);
+    for (int i = 0, j = rhorho - 1; i < rhorho; i++, j--) {
+      //      std::cout << "[" << i << "] : "
+      //	<< incr[i] << " * " << (*irho)[j] << std::endl;;
+      trip[i] = incr[i] * (*irho)[j];
+    }
+#if 0
+    std::cout << "trip[0 1 2] = ";
+    for (int i = 0; i < rhorho; i++) 
+      std::cout << trip[i] << " ";
+    std::cout << std::endl;
+#endif
+
+  }
+  
   size_t get_next_index ()
   {
-    int rhorho = ctr.size ();
-    size_t idx = 0;
-
-    for (int i = rhorho -1; i >= 0; i--) {
-      idx += ctr[i] * stride[i];
-    }
-
-    int carry = 1;
-    for (int i = rhorho -1; i >= 0; i--) {
-      ctr[i] += carry;
-      size_t p = (*perm)[i];
-      if (ctr[i] >= (*rho)[p]) {
-	ctr[i] = 0;
-	carry = 1;
+    size_t sum = 0;
+    bool carry = 1;
+    for (int i = rhorho - 1; i >= 0; i--) {
+      sum += ctrs[i];
+      if (carry) {
+	ctrs[i] += incr[i];
+	if (ctrs[i] >= trip[i]) {
+	  ctrs[i] = 0;
+	  carry = true;
+	}
+	else carry = false;
       }
-      else carry = 0;
     }
-    
-    return idx;
+    return sum;
   }
-
+  
 private:
-  std::vector<size_t> *rho;
-  std::vector<size_t> *perm;
-  std::vector<size_t> ctr;
-  std::vector<size_t> stride;
+  size_t rhorho;
+  std::vector<size_t> nperm;
+  std::vector<size_t> incr;
+  std::vector<size_t> trip;
+  std::vector<size_t> ctrs;
 };
-
+  
 //static bool dbl_sort (size_t i, size_t j) {return (i < j);}
 
 static Matrix *
@@ -163,7 +286,8 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
       }
       else {
 	delete iperm;
-	mtx->set_errmsg (std::string ("Permutation vector incompatible with given matrix"));
+	mtx->set_errmsg (std::string ("Permutation vector \
+incompatible with given matrix"));
 	return nullptr;
       }
     }
@@ -171,7 +295,7 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
       iperm = new std::vector<size_t>(rhorho);	
       for (size_t i = 0; i < rhorho; i++)
 	(*iperm)[i] = i;
-      std::swap ((*iperm)[rhorho - 2], (*iperm)[rhorho - 1]);
+      std::swap ((*iperm)[rhorho - 1], (*iperm)[rhorho - 2]);
     }
 
     std::vector<size_t> cperm (iperm->size ());
@@ -181,7 +305,7 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
     for (size_t jj = 0; jj < cperm.size (); jj++) {
       if (cperm[jj] != jj) {
 	delete iperm;
-	mtx->set_errmsg (std::string ("Permutation contains a non-unique element."));
+  mtx->set_errmsg (std::string ("Permutation contains a non-unique element."));
 	return nullptr;
       }
     }
@@ -189,7 +313,7 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
     std::vector<size_t>*new_rho =  new std::vector<size_t>(rhorho);
     std::vector<size_t>* rho = mtx->get_rho ();
     for (size_t i = 0; i < rhorho; i++) {
-      size_t t = (*iperm)[i];
+      size_t t = (rhorho - 1) - (*iperm)[i];
       if (t < rhorho) 
 	(*new_rho)[t] = (*rho)[i];
       else {
@@ -203,18 +327,21 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
     std::vector<double>*new_data =
       new std::vector<double>(mtx->size ());
 
-    DimCounter tc = DimCounter (new_rho, iperm);
+    DimCounter tc = DimCounter (rho, new_rho, iperm);
 
     std::vector<double> *data = mtx->get_data ();
     for (int i = 0; i < new_data->size (); i++) {
       int to = tc.get_next_index ();
-      std::cout << " to = " << to << std::endl;
-      (*new_data)[to] = (*data)[i];
+      (*new_data)[i] = (*data)[to];
     }
 
-    Matrix *nm = new Matrix (new_rho, new_data);
+    std::vector<size_t>*c_rho =  new std::vector<size_t>(rhorho);
+    for (size_t i = 0; i < rhorho; i++)
+      (*c_rho)[i] = (*new_rho)[(rhorho - 1) - i];
+    Matrix *nm = new Matrix (c_rho, new_data);
 
     delete iperm;
+    delete new_rho; 
     return nm; 
   }
   return nullptr; 
