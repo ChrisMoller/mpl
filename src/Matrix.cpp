@@ -18,6 +18,37 @@ Matrix::Matrix ()
   dims = nullptr;
 }
 
+// identity
+Matrix::Matrix (size_t rank, size_t dim)
+{
+#if 0
+  if (rank == 2) {
+    data = new std::vector<double>(dim * dim, 0.0);
+    for (size_t i = 0; i < dim; i++)
+      (*data)[(dim + 1) * i] = 1.0;
+    dims = new std::vector<size_t>(2, dim);
+  }
+  else {
+#endif
+    size_t cnt =
+      static_cast<size_t>(std::pow (static_cast<double>(dim),
+				    static_cast<double>(rank)));
+    size_t stride = 0;
+    size_t scale = 1;
+    for (size_t i = 0; i < rank; i++) {
+      stride += scale;
+      scale *= dim;
+    }
+    data = new std::vector<double>(cnt, 0.0);
+    for (size_t i = 0, off = 0; i < dim; i++, off+=stride) {
+      (*data)[off] = 1.0;
+    }
+    dims = new std::vector<size_t>(rank, dim);
+#if 0
+  }
+#endif
+}
+
 Matrix::Matrix (std::vector<size_t> *ndims, std::vector<double> *ndata)
 {
   dims = ndims;

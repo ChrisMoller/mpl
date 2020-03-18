@@ -492,6 +492,27 @@ dyadicMatSolve (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
   }
 }
 
+static void
+dyadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+{
+  if (right.get_typeinfo() == typeid(double) &&
+      left.get_typeinfo()  == typeid(double)) {
+    double rank = left.as<double>();
+    double dim = right.as<double>();
+    if (rank >= 2.0 && rank <= dim) {
+      Matrix *rv = new Matrix (static_cast<size_t>(rank),
+			       static_cast<size_t>(dim));
+      rc = rv;
+    }
+    else {
+      rc = Error(Error::ERROR_OUT_OF_RANGE, ", dyadic identity");
+    }
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic identity");
+  }
+}
+
 static dfunc dfuncs[] =
 {
  nullptr,	// empty	 0
@@ -548,6 +569,7 @@ static dfunc dfuncs[] =
  dyadicMatSolve,	// OpBSSlash		51
  nullptr,		// OpSlashPlus		52
  nullptr,		// OpSlashStar		53
+ dyadicIdentity,	// OpBSI		54
 };
 
 dfunc

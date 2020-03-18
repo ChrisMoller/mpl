@@ -8,6 +8,7 @@
 class  Matrix {
 public:
   Matrix ();
+  Matrix (size_t rank, size_t dim);
   Matrix (std::vector<size_t> *ndims, std::vector<double> *ndata);
   Matrix (monadic_op op, Matrix *rv);
   Matrix (antlrcpp::Any &dr);

@@ -361,28 +361,38 @@ monadicGradeDown (antlrcpp::Any &rc, antlrcpp::Any &right)
 static void
 monadicDeterminant (antlrcpp::Any &rc, antlrcpp::Any &right)
 {
-  Matrix *rv = right.as<Matrix *>();
-  double det = rv->determinant ();
+  if (right.get_typeinfo() == typeid(Matrix *)) {
+    Matrix *rv = right.as<Matrix *>();
+    double det = rv->determinant ();
 
-  if (std::isnan (det)) {
-    rc = Error(Error::ERROR_FAILED_DETERMINANT);
-    std::string em = rv->get_errmsg ();
-    std::cout << em << std::endl;
+    if (std::isnan (det)) {
+      rc = Error(Error::ERROR_FAILED_DETERMINANT);
+      std::string em = rv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+    else rc = det;
   }
-  else rc = det;
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", determinant");
+  }
 }
 
 static void
 monadicInverse (antlrcpp::Any &rc, antlrcpp::Any &right)
 {
-  Matrix *rv  = right.as<Matrix *>();
-  Matrix *mtx = rv->inverse ();
+  if (right.get_typeinfo() == typeid(Matrix *)) {
+    Matrix *rv  = right.as<Matrix *>();
+    Matrix *mtx = rv->inverse ();
 
-  if (mtx) rc = mtx;
+    if (mtx) rc = mtx;
+    else {
+      rc = Error(Error::ERROR_FAILED_INVERSE);
+      std::string em = rv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
   else {
-    rc = Error(Error::ERROR_FAILED_INVERSE);
-    std::string em = rv->get_errmsg ();
-    std::cout << em << std::endl;
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", matrix inverse");
   }
 }
 
@@ -446,6 +456,19 @@ monadicProduct (antlrcpp::Any &rc, antlrcpp::Any &right)
   }
 }
 
+static void
+monadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &right)
+{
+  if (right.get_typeinfo() == typeid(double)) {
+    double dim  = right.as<double>();
+    Matrix *rv = new Matrix (2, static_cast<size_t>(dim));
+    rc = rv;
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", monadic identity");
+  }
+}
+
 static mfunc mfuncs[] =
 {
  nullptr,	// empty	 0
@@ -502,6 +525,7 @@ static mfunc mfuncs[] =
  monadicInverse,	// OpBSSlash		51
  monadicSum,		// OpSlashPlus		52
  monadicProduct,	// OpSlashStar		53
+ monadicIdentity,	// OpBSI		54
 };
 
 mfunc

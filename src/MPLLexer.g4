@@ -59,57 +59,58 @@ fragment Real	  : '.'Digit+ | Digit+('.'Digit*)?([Ee][~+\-]?Digit+)? ;
 fragment Digit	  : [0-9];
 fragment NaN	  : 'NAN' | 'NaN' | 'nan' | 'inf';
 
-OpStar		  	: '*';
-OpSlash		  	: '/';
-OpPlus		  	: '+';
-OpMinus		  	: '-';
-OpDollar		: '$';
-OpPercent		: '%';
-OpHat		  	: '^';
-OpLn			: 'ln';
-OpLog			: 'log';
-OpExp			: 'exp';
-OpRoot			: 'root';
-OpSin			: 'sin';
-OpCos			: 'cos';
-OpTan			: 'tan';
-OpAsin			: 'asin';
-OpAcos			: 'acos';
-OpAtan			: 'atan';
-OpSind			: 'sind';
-OpCosd			: 'cosd';
-OpTand			: 'tand';
-OpAsind			: 'asind';
-OpAcosd			: 'acosd';
-OpAtand			: 'atand';
-OpBar			: '|';
-OpBang			: '!';
-OpCeil			: 'ceil';
-OpFloor			: 'floor';
-OpRound			: 'round';
-OpLeftAngle 	  	: '<';
-OpRightAngle	  	: '>';
-OpQMark			: '?';
-OpEqual			: '=';
-OpPound			: '#';
-OpComma			: ',';
-OpColon			: ':';
-OpBSStar		: '\\*';
-OpColonColon		: '::';
-OpQEqual		: '?=';
-OpQLeftAngle	  	: '?<';
-OpQRightAngle  		: '?>';
-OpQLeftAngleEqual	: '?<=';
-OpQRightAngleEqual 	: '?>=';
-OpQBangEqual	  	: '?!=';
-OpQBangLeftAngle	: '?!<';
-OpQBangRightAngle	: '?!>';
-OpQBangLeftAngleEqual	: '?!<=';
-OpQBangRightAngleEqual	: '?!>=';
-OpDet			: 'det';
-OpBSSlash		: '\\/';
-OpSlashPlus		: '/+';
-OpSlashStar		: '/*';
+OpStar		  	: '*';	    	// nullptr             dyadicStar
+OpSlash		  	: '/';		// monadicSlash	       dyadicSlash
+OpPlus		  	: '+';		// nullptr	       dyadicPlus
+OpMinus		  	: '-';		// monadicMinus	       dyadicMinus
+OpDollar		: '$';		// monadicTranspose    dyadicTranspose
+OpPercent		: '%';		// nullptr	       nullptr
+OpHat		  	: '^';		// nullptr	       dyadicHat
+OpLn			: 'ln';		// monadicLn	       nullptr
+OpLog			: 'log';	// monadicLog	       dyadicLog
+OpExp			: 'exp';	// monadicExp	       nullptr
+OpRoot			: 'root';	// monadicRoot	       dyadicRoot
+OpSin			: 'sin';	// monadicSin	       nullptr
+OpCos			: 'cos';	// monadicCos	       nullptr
+OpTan			: 'tan';	// monadicTan	       nullptr
+OpAsin			: 'asin';	// monadicAsin	       nullptr
+OpAcos			: 'acos';	// monadicAcos	       nullptr
+OpAtan			: 'atan';	// monadicAtan	       dyadicAtan
+OpSind			: 'sind';	// monadicSind	       nullptr
+OpCosd			: 'cosd';	// monadicCosd	       nullptr
+OpTand			: 'tand';	// monadicTand	       nullptr
+OpAsind			: 'asind';	// monadicAsind	       nullptr
+OpAcosd			: 'acosd';	// monadicAcosd	       nullptr
+OpAtand			: 'atand';	// monadicAtand	       dyadicAtand
+OpBar			: '|';		// monadicBar	       nullptr
+OpBang			: '!';		// monadicBang	       nullptr
+OpCeil			: 'ceil';	// monadicCeil	       nullptr
+OpFloor			: 'floor';	// monadicFloor	       nullptr
+OpRound			: 'round';	// monadicRound	       nullptr
+OpLeftAngle 	  	: '<';		// monadicGradeDown    nullptr
+OpRightAngle	  	: '>';		// monadicGradeUp      nullptr
+OpQMark			: '?';		// monadicRand	       nullptr
+OpEqual			: '=';		// nullptr	       dyadicEqual
+OpPound			: '#';		// monadicShape	       dyadicShape
+OpComma			: ',';		// nullptr	       nullptr
+OpColon			: ':';		// nullptr	       nullptr
+OpBSStar		: '\\*';	// nullptr	       dyadicMatMult
+OpColonColon		: '::';		// monadicRange	       dyadicRange
+OpQEqual		: '?=';		// nullptr	       dyadicTestEq
+OpQLeftAngle	  	: '?<';		// nullptr	       dyadicTestLT
+OpQRightAngle  		: '?>';		// nullptr	       dyadicTestGT
+OpQLeftAngleEqual	: '?<=';	// nullptr	       dyadicTestLE
+OpQRightAngleEqual 	: '?>=';	// nullptr	       dyadicTestGE
+OpQBangEqual	  	: '?!=';	// nullptr	       dyadicTestNE
+OpQBangLeftAngle	: '?!<';	// nullptr	       dyadicTestGE
+OpQBangRightAngle	: '?!>';	// nullptr	       dyadicTestLE
+OpQBangLeftAngleEqual	: '?!<=';	// nullptr	       dyadicTestGT
+OpQBangRightAngleEqual	: '?!>=';	// nullptr	       dyadicTestLT
+OpDet			: 'det';	// monadicDeterminant  nullptr
+OpBSSlash		: '\\/';	// monadicInverse      dyadicMatSolve
+OpSlashPlus		: '/+';		// monadicSum	       nullptr
+OpSlashStar		: '/*';		// monadicProduct      nullptr
+OpBSI			: '\\I';	// monadicIdentity     dyadicIdentity
 
 And		: 'and';
 Semicolon	: ';';
