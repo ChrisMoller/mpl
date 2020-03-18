@@ -50,10 +50,12 @@ antlrcpp::Any::~Any ()
   //  std::cout << "Any free " << std::cout;
   
   if (this) {
+#if 0               //  fixme
     if (this->get_typeinfo() == typeid(Matrix*)) {
       Matrix *rv = this->as<Matrix *>();
       delete rv;
     }
+#endif
     if (this->get_typeinfo() == typeid(std::vector<double>*) || 
 	this->get_typeinfo() == typeid(std::vector<bool>*)   ||
 	this->get_typeinfo() == typeid(std::vector<size_t>*) ||
