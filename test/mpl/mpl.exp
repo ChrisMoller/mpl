@@ -18,6 +18,8 @@ set prodscalar  "/*6"
 set tpose1      "$ 2 3#1::6"
 set tpose2      "$  (2 3 4#::24)"
 set tpose3      "1 2 0 $  (2 3 4#::24)"
+set ident1      "\\I3"
+set ident2      "\\I3"
 
 
 # matrix[vector]
@@ -37,6 +39,8 @@ set index4 "a=::6; a\[ 2 2#::4 \]"
 #set xfail_flag 1
 
 set testdata {
+    {"\"$ident2\""   ".*\n1 0.*\n0 1"}
+    {"\"$ident1\""   ".*\n1 0 0.*\n0 1 0.*\n0 0 1"}
     {"\"$tpose1\""   ".*\n1 4.*\n2 5.*\n3 6"}
     {"\"$tpose2\""   "0 4 8.*\n.*1 5 9.*"}
     {"\"$tpose3\""   "0 4 8.*\n.*12 16 20.*"}
