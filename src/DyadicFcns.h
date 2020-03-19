@@ -10,31 +10,44 @@ typedef double (*dyadic_op)(double left, double right);
 typedef bool   (*dyadic_test)(double left, double right);
       
 typedef void (*dfunc)(antlrcpp::Any &rc,
-		      antlrcpp::Any &left, antlrcpp::Any &right);
+		      antlrcpp::Any &left,
+		      antlrcpp::Any &right,
+		      antlrcpp::Any &qual);
 
 static void
-dyadicStar  (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicStar  (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 static void
-dyadicSlash (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicSlash (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 static void
-dyadicPlus  (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicPlus  (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 static void
-dyadicMinus (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicMinus (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 static void
-dyadicHat   (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicHat   (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 static void
-dyadicLog   (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicLog   (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 static void
-dyadicRoot  (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicRoot  (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 static void
-dyadicAtan  (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicAtan  (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 static void
-dyadicAtand (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicAtand (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 static void
-dyadicEqual (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
+dyadicEqual (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual);
 
 void
-do_vector_shift (antlrcpp::Any &rc, double shift, antlrcpp::Any &right);
+do_vector_shift (antlrcpp::Any &rc, double shift,
+		 antlrcpp::Any &right, antlrcpp::Any &qual);
 
 dfunc dyadic_get_func (int idx);
 

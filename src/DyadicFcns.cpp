@@ -111,61 +111,71 @@ do_dyadic  (antlrcpp::Any &rc, dyadic_op op,
 }
 
 static void
-dyadicStar (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicStar (antlrcpp::Any &rc, antlrcpp::Any &left,
+	    antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   do_dyadic (rc, fragmentProduct, left, right);
 }
 
 static void
-dyadicSlash (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicSlash (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   do_dyadic (rc, fragmentRatio, left, right);
 }
 
 static void
-dyadicPlus  (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicPlus  (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   do_dyadic (rc, fragmentSum, left, right);
 }
 
 static void
-dyadicMinus (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicMinus (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
    do_dyadic (rc, fragmentDiff, left, right);
 }
 
 static void
-dyadicHat   (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicHat   (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
    do_dyadic (rc, fragmentPow, left, right);
 }
 
 static void
-dyadicLog   (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicLog   (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
    do_dyadic (rc, fragmentLog, left, right);
 }
 
 static void
-dyadicRoot  (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicRoot  (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
    do_dyadic (rc, fragmentRoot, left, right);
 }
 
 static void
-dyadicAtan  (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicAtan  (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
    do_dyadic (rc, fragmentAtan, left, right);
 }
 
 static void
-dyadicAtand (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicAtand (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
    do_dyadic (rc, fragmentAtand, left, right);
 }
 
 static void
-dyadicEqual (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicEqual (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (left.get_typeinfo() == typeid(std::string *)) {
     std::string *sym = left.as<std::string *>();
@@ -179,7 +189,8 @@ dyadicEqual (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 }
 
 static void
-dyadicRange (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicRange (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double) &&
       left.get_typeinfo()  == typeid(double)) {
@@ -259,43 +270,50 @@ do_test (antlrcpp::Any &rc, dyadic_test op,
 }
 
 static void
-dyadicTestEq (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicTestEq (antlrcpp::Any &rc, antlrcpp::Any &left,
+	      antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   do_test (rc, fragmentTestEq, left, right);
 }
 
 static void
-dyadicTestLT (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicTestLT (antlrcpp::Any &rc, antlrcpp::Any &left,
+	      antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   do_test (rc, fragmentTestLT, left, right);
 }
 
 static void
-dyadicTestGT (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicTestGT (antlrcpp::Any &rc, antlrcpp::Any &left,
+	      antlrcpp::Any &right, antlrcpp::Any &qual)
 {
    do_test (rc, fragmentTestGT, left, right);
 }
 
 static void
-dyadicTestLE (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicTestLE (antlrcpp::Any &rc, antlrcpp::Any &left,
+	      antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   return do_test (rc, fragmentTestLE, left, right);
 }
 
 static void
-dyadicTestGE (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicTestGE (antlrcpp::Any &rc, antlrcpp::Any &left,
+	      antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   do_test (rc, fragmentTestGE, left, right);
 }
 
 static void
-dyadicTestNE (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicTestNE (antlrcpp::Any &rc, antlrcpp::Any &left,
+	      antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   do_test (rc, fragmentTestNE, left, right);
 }
 
 static void
-dyadicShape (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicShape (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   /*
     fixme array of t/f, or one massive t/f
@@ -366,7 +384,8 @@ dyadicShape (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 }
 
 static void
-dyadicMatMult (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicMatMult (antlrcpp::Any &rc, antlrcpp::Any &left,
+	       antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (left.get_typeinfo() == typeid(Matrix*) &&
       right.get_typeinfo()  == typeid(Matrix*)) {
@@ -410,7 +429,8 @@ dyadicMatMult (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 }
 
 static void
-dyadicMatSolve (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicMatSolve (antlrcpp::Any &rc, antlrcpp::Any &left,
+		antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (left.get_typeinfo() == typeid(Matrix*) &&
       right.get_typeinfo()  == typeid(Matrix*)) {
@@ -454,7 +474,8 @@ dyadicMatSolve (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 }
 
 static void
-dyadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &left,
+		antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double) &&
       left.get_typeinfo()  == typeid(double)) {
@@ -475,7 +496,8 @@ dyadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 }
 
 void
-do_vector_shift (antlrcpp::Any &rc, double shift, antlrcpp::Any &right)
+do_vector_shift (antlrcpp::Any &rc, double shift,
+		 antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   std::vector<double> *right_vec = right.as<std::vector<double>*>();
   std::vector<double> *rv = new std::vector<double> (right_vec->size ());
@@ -490,7 +512,8 @@ do_vector_shift (antlrcpp::Any &rc, double shift, antlrcpp::Any &right)
 }
 
 static void
-dyadicLeft (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicLeft (antlrcpp::Any &rc, antlrcpp::Any &left,
+	    antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (left.get_typeinfo() == typeid(double)) {
     double shift = left.as<double>();
@@ -499,7 +522,7 @@ dyadicLeft (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
       rc = rv;
     }
     else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
-      do_vector_shift (rc, shift, right);
+      do_vector_shift (rc, shift, right, qual);
     }
     else if (right.get_typeinfo() == typeid(Matrix*)) {
     }
@@ -513,7 +536,8 @@ dyadicLeft (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 }
 
 static void
-dyadicRight (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+dyadicRight (antlrcpp::Any &rc, antlrcpp::Any &left,
+	     antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (left.get_typeinfo() == typeid(double)) {
     double shift = left.as<double>();
@@ -522,7 +546,7 @@ dyadicRight (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
       rc = rv;
     }
     else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
-      do_vector_shift (rc, -shift, right);
+      do_vector_shift (rc, -shift, right, qual);
     }
     else if (right.get_typeinfo() == typeid(Matrix*)) {
     }

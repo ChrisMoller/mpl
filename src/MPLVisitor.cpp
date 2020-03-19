@@ -484,29 +484,30 @@ antlrcpp::Any
 MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
 {
   Token *token = ctx->op ()->getStart ();
-#ifdef SHOW_TRACE
-  std::string indent = std::string (3 * depth, ' ');
-  std::cout << indent << "Dy " << token->getText ()
-	    << " depth = " << depth << std::endl;
-#endif
   auto token_idx = token->getType();
   antlrcpp::Any result = Error(Error::ERROR_INTERNAL, " visitMPLDyadic");
   std::string *left_copy = nullptr;
 
+  antlrcpp::Any qual_any;
+  antlrcpp::Any right_any;
+  
   size_t n = ctx->children.size();
 
-  if (n != 3) {
+  if (n == 3) {
+    qual_any  = nullptr;
+    right_any = ctx->children[2]->accept(this);
+  }
+  else if (n == 6) {
+    qual_any  = ctx->children[3]->accept(this);
+    right_any = ctx->children[5]->accept(this);
+  }
+  else {
     result = Error(Error::ERROR_MALFORMED_EXPRESSION);
     return result;
   }
 
-#ifdef SHOW_TRACE
-  depth++;
-#endif
   antlrcpp::Any left_any = ctx->children[0]->accept(this);
-#ifdef SHOW_TRACE
-  depth--;
-#endif
+
   if (token_idx == MPLLexer::OpEqual) {
     if (left_any.get_typeinfo() == typeid(std::string)) {
       std::string ss = left_any.as<std::string>();
@@ -525,13 +526,6 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
     }
   }
 
-#ifdef SHOW_TRACE
-  depth++;
-#endif
-  antlrcpp::Any right_any = ctx->children[2]->accept(this);
-#ifdef SHOW_TRACE
-  depth--;
-#endif
   if (right_any.get_typeinfo() == typeid(std::string)) {
     std::string ss = right_any.as<std::string>();
     right_any = get_symbol_value (ss);
@@ -543,7 +537,7 @@ MPLVisitor::visitMPLDyadic(MPLParser::MPLDyadicContext *ctx)
 
   if (left_any.isNotNull () && right_any.isNotNull ()) {
     dfunc fcn = dyadic_get_func (token_idx);
-    if (fcn) (*fcn)(result, left_any, right_any);
+    if (fcn) (*fcn)(result, left_any, right_any, qual_any);
     else {
       result = Error(Error::ERROR_MALFORMED_EXPRESSION);
       return result;

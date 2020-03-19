@@ -114,9 +114,8 @@ eos	: {isFromCmdLine()}? Semicolon | EOL
 	;
 
 
-//      	| <assoc = right> op
-//	    (OpenSquare expr CloseSquare)? expr 	# MPLQualMono
-expr	: <assoc = right> expr op expr		# MPLDyadic
+expr	: <assoc = right> expr op
+            (OpenSquare expr CloseSquare)? expr		# MPLDyadic
       	| <assoc = right> op
 	  (OpenSquare expr CloseSquare)? expr 	# MPLMonadic
 	| OpenPar expr ClosePar			# MPLParen

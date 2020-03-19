@@ -5,7 +5,6 @@
 #include <antlr4-runtime.h>
 
 typedef double (*monadic_op)(double right);
-//typedef void (*mfunc)(antlrcpp::Any &rc, antlrcpp::Any &right);
 typedef void (*mfunc)(antlrcpp::Any &rc,
 		      antlrcpp::Any &right,
 		      antlrcpp::Any &qual);

@@ -482,7 +482,7 @@ monadicLeft (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
     rc = rv;
   }
   else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
-    do_vector_shift (rc, 1.0, right);
+    do_vector_shift (rc, 1.0, right, qual);
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
   }
@@ -499,7 +499,7 @@ monadicRight (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
     rc = rv;
   }
   else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
-    do_vector_shift (rc, -1.0, right);
+    do_vector_shift (rc, -1.0, right, qual);
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
   }
