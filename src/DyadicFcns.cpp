@@ -570,6 +570,8 @@ static dfunc dfuncs[] =
  nullptr,		// OpSlashPlus		52
  nullptr,		// OpSlashStar		53
  dyadicIdentity,	// OpBSI		54
+ nullptr,		// OpLALA		55
+ nullptr,		// OpRARA		56
 };
 
 dfunc

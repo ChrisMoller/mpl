@@ -111,6 +111,8 @@ OpBSSlash		: '\\/';	// monadicInverse      dyadicMatSolve
 OpSlashPlus		: '/+';		// monadicSum	       nullptr
 OpSlashStar		: '/*';		// monadicProduct      nullptr
 OpBSI			: '\\I';	// monadicIdentity     dyadicIdentity
+OpLALA			: '<<';		// monadicLeft         dyadicLeft
+OpRARA			: '>>';		// monadicRight        dyadicRight
 
 And		: 'and';
 Semicolon	: ';';

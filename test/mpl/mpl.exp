@@ -19,7 +19,7 @@ set tpose1      "$ 2 3#1::6"
 set tpose2      "$  (2 3 4#::24)"
 set tpose3      "1 2 0 $  (2 3 4#::24)"
 set ident1      "\\I3"
-set ident2      "\\I3"
+set ident2      "2\\I2"
 
 
 # matrix[vector]

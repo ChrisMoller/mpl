@@ -208,6 +208,8 @@ op	: OpStar
 	| OpSlashPlus
 	| OpSlashStar
 	| OpBSI
+	| OpLALA
+	| OpRARA
 	;
 
 id	: ID;

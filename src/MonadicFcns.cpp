@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstring>
 #include <cstdlib>
 
 
@@ -469,6 +470,75 @@ monadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &right)
   }
 }
 
+static void
+monadicLeft (antlrcpp::Any &rc, antlrcpp::Any &right)
+{
+  if (right.get_typeinfo() == typeid(double)) {
+    double rv = right.as<double>();
+    rc = rv;
+  }
+  else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
+    std::vector<double> *right_vec = right.as<std::vector<double>*>();
+    std::vector<double> *rv = new std::vector<double> (right_vec->size ());
+    double *fm = right_vec->data ();
+    double *to = rv->data ();
+    std::memmove (to, fm+1, (right_vec->size () - 1) * sizeof(double));
+    to[(right_vec->size () - 1)] = fm[0];
+    rc = rv;
+  }
+  else if (right.get_typeinfo() == typeid(Matrix*)) {
+    Matrix *rv  = right.as<Matrix *>();
+    double res = rv->sum ();
+
+    if (!std::isnan (res))  rc = res;
+    else {
+      rc = Error(Error::ERROR_FAILED_INVERSE);
+      std::string em = rv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", left operation");
+  }
+}
+
+static void
+monadicRight (antlrcpp::Any &rc, antlrcpp::Any &right)
+{
+  std::cout << "right\n";
+  if (right.get_typeinfo() == typeid(double)) {
+    double rv = right.as<double>();
+    rc = rv;
+  }
+  /***
+      fm 0 1 2 3 4 5
+      to 5 0 1 2 3 4
+   ***/
+  else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
+    std::vector<double> *right_vec = right.as<std::vector<double>*>();
+    std::vector<double> *rv = new std::vector<double> (right_vec->size ());
+    double *fm = right_vec->data ();
+    double *to = rv->data ();
+    std::memmove (to+1, fm, (right_vec->size () - 1) * sizeof(double));
+    to[0] = fm[right_vec->size () - 1];
+    rc = rv;
+  }
+  else if (right.get_typeinfo() == typeid(Matrix*)) {
+    Matrix *rv  = right.as<Matrix *>();
+    double res = rv->sum ();
+
+    if (!std::isnan (res))  rc = res;
+    else {
+      rc = Error(Error::ERROR_FAILED_INVERSE);
+      std::string em = rv->get_errmsg ();
+      std::cout << em << std::endl;
+    }
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", left operation");
+  }
+}
+
 static mfunc mfuncs[] =
 {
  nullptr,	// empty	 0
@@ -526,6 +596,8 @@ static mfunc mfuncs[] =
  monadicSum,		// OpSlashPlus		52
  monadicProduct,	// OpSlashStar		53
  monadicIdentity,	// OpBSI		54
+ monadicLeft,		// OpLALA		55
+ monadicRight,		// OpRARA		56
 };
 
 mfunc
