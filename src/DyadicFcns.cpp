@@ -199,6 +199,7 @@ dyadicRange (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
   }
 }
 
+#if 0
 static void
 dyadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 {
@@ -238,6 +239,7 @@ dyadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
     rc = Error(Error::ERROR_MALFORMED_TRANSPOSE, ", incompatible arguments");
   }
 }
+#endif
 
 static void
 do_test (antlrcpp::Any &rc, dyadic_test op,
@@ -522,7 +524,7 @@ static dfunc dfuncs[] =
  dyadicSlash,	// OpSlash	 4
  dyadicPlus,	// OpPlus	 5
  dyadicMinus,	// OpMinus	 6
- dyadicTranspose,	// OpDollar	 7
+ nullptr /*dyadicTranspose*/,	// OpDollar	 7
  nullptr,	// OpPercent	 8
  dyadicHat,	// OpHat	 9
  nullptr,	// OpLn		10

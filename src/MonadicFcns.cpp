@@ -250,7 +250,7 @@ monadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
     Matrix *rv = right.as<Matrix *>();
-      Matrix *xmtx = rv->transpose ();
+      Matrix *xmtx = rv->transpose (qual);
       if (xmtx) rc = xmtx;
       else {
 	rc = Error(Error::ERROR_FAILED_TRANSPOSE);
@@ -361,7 +361,8 @@ monadicGradeDown (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 }
 
 static void
-monadicDeterminant (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
+monadicDeterminant (antlrcpp::Any &rc, antlrcpp::Any &right,
+		    antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(Matrix *)) {
     Matrix *rv = right.as<Matrix *>();

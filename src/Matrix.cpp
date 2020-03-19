@@ -510,20 +510,26 @@ Matrix::multiply (Matrix *rv)
 Matrix *
 Matrix::transpose (antlrcpp::Any &permutation)
 {
-  std::vector<double> *perm = permutation.as<std::vector<double>*>();
-  std::vector<size_t> *iperm = new std::vector<size_t>(perm->size ());
-  for (size_t i = 0; i < perm->size (); i++)
-    (*iperm)[i] = int((*perm)[i]);
-  Matrix * rc = do_transpose (iperm, this);
-  delete iperm;
+  Matrix *rc = nullptr;
+  if (permutation.get_typeinfo() != typeid(nullptr)) {
+    std::vector<double> *perm = permutation.as<std::vector<double>*>();
+    std::vector<size_t> *iperm = new std::vector<size_t>(perm->size ());
+    for (size_t i = 0; i < perm->size (); i++)
+      (*iperm)[i] = int((*perm)[i]);
+    rc = do_transpose (iperm, this);
+    delete iperm;
+  }
+  else rc = do_transpose (nullptr, this);
   return rc;
 }
 
+#if 0
 Matrix *
 Matrix::transpose ()
 {
   return do_transpose (nullptr, this);
 }
+#endif
 
 double
 Matrix::sum ()
