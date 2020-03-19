@@ -36,6 +36,7 @@ public:
   Matrix * solve (Matrix *);
   void fill (double v);
   void copy (antlrcpp::Any &v);
+  void reshape (antlrcpp::Any &v);
   double &operator[](size_t i);
   antlrcpp::Any rho ();
   antlrcpp::Any values ();

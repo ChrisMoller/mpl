@@ -28,6 +28,8 @@ set shift3      "~2<<::6"
 set shift4      ">>::6"
 set shift5      "7>>::6"
 set shift6      "~7>>::6"
+set reshape1    "~1#2 3#::6"
+set reshape2    "6 2#3 4 #::12"
 
 
 # matrix[vector]
@@ -47,6 +49,8 @@ set index4 "a=::6; a\[ 2 2#::4 \]"
 #set xfail_flag 1
 
 set testdata {
+    {"\"$reshape2\"" "\n0 1.*\n2 3"}
+    {"\"$reshape1\"" "0 1 2 3 4 5"}
     {"\"$shift1\""   "1 2 3 4 5 0"}
     {"\"$shift2\""   "2 3 4 5 0 1"}
     {"\"$shift3\""   "4 5 0 1 2 3"}

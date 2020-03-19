@@ -648,6 +648,14 @@ Matrix::copy (antlrcpp::Any &vec)
     (*data)[i] = (*vals)[i%nr_vals];
 }
 
+void
+Matrix::reshape (antlrcpp::Any &vec)
+{
+  Matrix *omtx = vec.as<Matrix*>();
+  size_t nr_vals = data->size ();
+  std::memmove (data->data (), omtx->data->data (), nr_vals * sizeof(double));
+}
+
 double &
 Matrix::operator[](size_t i)
 {

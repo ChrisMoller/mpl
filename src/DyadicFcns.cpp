@@ -378,6 +378,39 @@ dyadicShape (antlrcpp::Any &rc, antlrcpp::Any &left,
 		 ": Matrix dimension mismatch");
     }
   }
+  else if (left.get_typeinfo() == typeid(std::vector<double>*) &&
+	   right.get_typeinfo()  == typeid(Matrix *)) {
+    std::vector<double> *left_vec  = left.as<std::vector<double>*>();
+    size_t cnt = 1;
+    for (size_t i = 0; i < left_vec->size (); i++)
+      cnt *= (*left_vec)[i];
+    Matrix *right_mtx = right.as<Matrix*>();
+    if (cnt == right_mtx->size ()) {
+      Matrix *mtx = new Matrix (left);
+      mtx->reshape (right);
+      rc = mtx;
+    }
+    else {
+      rc = Error(Error::ERROR_DIMENSION_MISMATCH,
+		 ": Matrix dimension mismatch");
+    }
+  }
+  else if (left.get_typeinfo() == typeid(double) &&
+	   right.get_typeinfo()  == typeid(Matrix *)) {
+    double cnt  = left.as<double>();
+    Matrix *right_mtx = right.as<Matrix*>();
+    if (cnt < 0.0 || cnt == right_mtx->size ()) {
+      std::vector<double>*vec =
+	new std::vector<double>(right_mtx->size ());
+      std::memmove (vec->data (), right_mtx->get_data ()->data (),
+		    right_mtx->size () * sizeof(double));  
+      rc = vec;
+    }
+    else {
+      rc = Error(Error::ERROR_DIMENSION_MISMATCH,
+		 ": Matrix dimension mismatch");
+    }
+  }
   else {
     // errors
   }
