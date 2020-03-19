@@ -22,6 +22,12 @@ set tpose3      "$ \[ 1 2 0 \]  (2 3 4#::24)"
 set ident1      "\\I3"
 set ident2      "2\\I2"
 set tpose4      "$ \[ 1 0 \] 2 3#::6"
+set shift1      "<<::6"
+set shift2      "2<<::6"
+set shift3      "~2<<::6"
+set shift4      ">>::6"
+set shift5      "7>>::6"
+set shift6      "~7>>::6"
 
 
 # matrix[vector]
@@ -41,6 +47,12 @@ set index4 "a=::6; a\[ 2 2#::4 \]"
 #set xfail_flag 1
 
 set testdata {
+    {"\"$shift1\""   "1 2 3 4 5 0"}
+    {"\"$shift2\""   "2 3 4 5 0 1"}
+    {"\"$shift3\""   "4 5 0 1 2 3"}
+    {"\"$shift4\""   "5 0 1 2 3 4"}
+    {"\"$shift5\""   "5 0 1 2 3 4"}
+    {"\"$shift6\""   "1 2 3 4 5 0"}
     {"\"$ident2\""   ".*\n1 0.*\n0 1"}
     {"\"$ident1\""   ".*\n1 0 0.*\n0 1 0.*\n0 0 1"}
     {"\"$tpose1\""   ".*\n1 4.*\n2 5.*\n3 6"}

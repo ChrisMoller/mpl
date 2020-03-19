@@ -474,36 +474,60 @@ dyadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
   }
 }
 
+void
+do_vector_shift (antlrcpp::Any &rc, double shift, antlrcpp::Any &right)
+{
+  std::vector<double> *right_vec = right.as<std::vector<double>*>();
+  std::vector<double> *rv = new std::vector<double> (right_vec->size ());
+  shift = fmod (shift, static_cast<double>(right_vec->size ()));
+  if (shift < 0.0) shift += static_cast<double>(right_vec->size ());
+  int lv = static_cast<int>(shift);
+  double *fm = right_vec->data ();
+  double *to = rv->data ();
+  std::memmove (to, fm + lv, (right_vec->size () - lv) * sizeof(double));
+  std::memmove (to + (right_vec->size () - lv) , fm, lv * sizeof(double));
+  rc = rv;
+}
 
 static void
 dyadicLeft (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
 {
   if (left.get_typeinfo() == typeid(double)) {
-    int lv   = static_cast<int>(left.as<double>());
-    //    bool negative = std::signbit (left.as<double>());
-    /***
-	fm 0 1 2 3 4 5        << 2
-	to 2 3 4 5 0 1
-     ***/
+    double shift = left.as<double>();
     if (right.get_typeinfo() == typeid(double)) {
       double rv = right.as<double>();
       rc = rv;
     }
     else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
-      std::vector<double> *right_vec = right.as<std::vector<double>*>();
-      std::vector<double> *rv = new std::vector<double> (right_vec->size ());
-      double *fm = right_vec->data ();
-      double *to = rv->data ();
-      size_t mlv = abs (lv);
-      lv = std::copysign (mlv % right_vec->size (), lv);
-      std::memmove (to, fm + lv, (right_vec->size () - mlv) * sizeof(double));
-      std::memmove (to + (right_vec->size () - lv) , fm, mlv * sizeof(double));
-      rc = rv;
+      do_vector_shift (rc, shift, right);
     }
     else if (right.get_typeinfo() == typeid(Matrix*)) {
     }
     else {
-      rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", left operation");
+      rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic left operation");
+    }
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic left operation");
+  }
+}
+
+static void
+dyadicRight (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+{
+  if (left.get_typeinfo() == typeid(double)) {
+    double shift = left.as<double>();
+    if (right.get_typeinfo() == typeid(double)) {
+      double rv = right.as<double>();
+      rc = rv;
+    }
+    else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
+      do_vector_shift (rc, -shift, right);
+    }
+    else if (right.get_typeinfo() == typeid(Matrix*)) {
+    }
+    else {
+      rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic left operation");
     }
   }
   else {
@@ -569,7 +593,7 @@ static dfunc dfuncs[] =
  nullptr,		// OpSlashStar		53
  dyadicIdentity,	// OpBSI		54
  dyadicLeft,		// OpLALA		55
- nullptr,		// OpRARA		56
+ dyadicRight,		// OpRARA		56
 };
 
 dfunc

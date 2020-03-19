@@ -33,6 +33,9 @@ dyadicAtand (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
 static void
 dyadicEqual (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right);
 
+void
+do_vector_shift (antlrcpp::Any &rc, double shift, antlrcpp::Any &right);
+
 dfunc dyadic_get_func (int idx);
 
 #endif  // DYNADICFCNS_H
