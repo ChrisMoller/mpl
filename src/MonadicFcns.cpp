@@ -294,7 +294,8 @@ static bool ety_sort_up (sort_ety i, sort_ety j){  return (i.d < j.d); }
 static bool ety_sort_dn (sort_ety i, sort_ety j){  return (i.d > j.d); }
 
 static void
-do_monadic_grade (antlrcpp::Any &rc, ety_sort_func func, antlrcpp::Any &right, antlrcpp::Any &qual)
+do_monadic_grade (antlrcpp::Any &rc, ety_sort_func func,
+		  antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     double rv = right.as<double>();
@@ -489,15 +490,6 @@ monadicLeft (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
     rc = rv;
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
-    Matrix *rv  = right.as<Matrix *>();
-    double res = rv->sum ();
-
-    if (!std::isnan (res))  rc = res;
-    else {
-      rc = Error(Error::ERROR_FAILED_INVERSE);
-      std::string em = rv->get_errmsg ();
-      std::cout << em << std::endl;
-    }
   }
   else {
     rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", left operation");
@@ -512,10 +504,6 @@ monadicRight (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
     double rv = right.as<double>();
     rc = rv;
   }
-  /***
-      fm 0 1 2 3 4 5
-      to 5 0 1 2 3 4
-   ***/
   else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
     std::vector<double> *right_vec = right.as<std::vector<double>*>();
     std::vector<double> *rv = new std::vector<double> (right_vec->size ());
@@ -526,15 +514,6 @@ monadicRight (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
     rc = rv;
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
-    Matrix *rv  = right.as<Matrix *>();
-    double res = rv->sum ();
-
-    if (!std::isnan (res))  rc = res;
-    else {
-      rc = Error(Error::ERROR_FAILED_INVERSE);
-      std::string em = rv->get_errmsg ();
-      std::cout << em << std::endl;
-    }
   }
   else {
     rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", left operation");

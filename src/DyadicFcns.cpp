@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstring>
 #include <antlr4-runtime.h>
 //#include <gsl/gsl_blas.h>
 
@@ -198,48 +199,6 @@ dyadicRange (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
     rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", range operation.");
   }
 }
-
-#if 0
-static void
-dyadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
-{
-  if (left.get_typeinfo() == typeid(double)) {
-    rc = Error(Error::ERROR_MALFORMED_TRANSPOSE,
-	       ": scalar left argument.");
-  }
-  if (left.get_typeinfo() == typeid(std::vector<double>*) && 
-      right.get_typeinfo() == typeid(double)) {
-    double rv = right.as<double>();
-    rc = rv;
-  }
-  if (left.get_typeinfo() == typeid(std::vector<double>*) && 
-      right.get_typeinfo() == typeid(std::vector<double>*)) {
-    double rv = right.as<double>();
-    rc = rv;
-  }
-  if (left.get_typeinfo() == typeid(std::vector<double>*) && 
-      right.get_typeinfo() == typeid(Matrix*)) {
-    Matrix *rv = right.as<Matrix *>();
-    if (rv->get_rhorho () > 0 &&
-	rv->get_rhorho () == rv->get_rho ()->size ()) {
-      Matrix *xmtx = rv->transpose (left);
-      if (xmtx) rc = xmtx;
-      else {
-	rc = Error(Error::ERROR_FAILED_TRANSPOSE);
-	std::string em = rv->get_errmsg ();
-	std::cout << em << std::endl;
-      }
-    }
-    else {
-      Matrix *mtx = new Matrix ();
-      rc = mtx;
-    }	
-  }
-  else {
-    rc = Error(Error::ERROR_MALFORMED_TRANSPOSE, ", incompatible arguments");
-  }
-}
-#endif
 
 static void
 do_test (antlrcpp::Any &rc, dyadic_test op,
@@ -515,6 +474,43 @@ dyadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
   }
 }
 
+
+static void
+dyadicLeft (antlrcpp::Any &rc, antlrcpp::Any &left, antlrcpp::Any &right)
+{
+  if (left.get_typeinfo() == typeid(double)) {
+    int lv   = static_cast<int>(left.as<double>());
+    //    bool negative = std::signbit (left.as<double>());
+    /***
+	fm 0 1 2 3 4 5        << 2
+	to 2 3 4 5 0 1
+     ***/
+    if (right.get_typeinfo() == typeid(double)) {
+      double rv = right.as<double>();
+      rc = rv;
+    }
+    else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
+      std::vector<double> *right_vec = right.as<std::vector<double>*>();
+      std::vector<double> *rv = new std::vector<double> (right_vec->size ());
+      double *fm = right_vec->data ();
+      double *to = rv->data ();
+      size_t mlv = abs (lv);
+      lv = std::copysign (mlv % right_vec->size (), lv);
+      std::memmove (to, fm + lv, (right_vec->size () - mlv) * sizeof(double));
+      std::memmove (to + (right_vec->size () - lv) , fm, mlv * sizeof(double));
+      rc = rv;
+    }
+    else if (right.get_typeinfo() == typeid(Matrix*)) {
+    }
+    else {
+      rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", left operation");
+    }
+  }
+  else {
+    rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic left operation");
+  }
+}
+
 static dfunc dfuncs[] =
 {
  nullptr,	// empty	 0
@@ -524,7 +520,7 @@ static dfunc dfuncs[] =
  dyadicSlash,	// OpSlash	 4
  dyadicPlus,	// OpPlus	 5
  dyadicMinus,	// OpMinus	 6
- nullptr /*dyadicTranspose*/,	// OpDollar	 7
+ nullptr,	// OpDollar	 7
  nullptr,	// OpPercent	 8
  dyadicHat,	// OpHat	 9
  nullptr,	// OpLn		10
@@ -572,7 +568,7 @@ static dfunc dfuncs[] =
  nullptr,		// OpSlashPlus		52
  nullptr,		// OpSlashStar		53
  dyadicIdentity,	// OpBSI		54
- nullptr,		// OpLALA		55
+ dyadicLeft,		// OpLALA		55
  nullptr,		// OpRARA		56
 };
 

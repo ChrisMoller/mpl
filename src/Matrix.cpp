@@ -1,5 +1,5 @@
-//#include <vector>
 #include <cmath>
+#include <cstring>
 #include <antlr4-runtime.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
@@ -128,8 +128,7 @@ public:
     ctrs.resize (rhorho, 0);
 
     nperm.resize (rhorho, 0);
-    for (int i = 0, j = rhorho - 1; i < rhorho; i++, j--)
-      nperm[i] = (*iperm)[j];
+    std::memmove (nperm.data (), iperm->data (), rhorho * sizeof(double));
     
     incr.resize (rhorho, 0);
     incr[(*iperm)[rhorho - 1]] = 1;
@@ -177,9 +176,8 @@ do_transpose (std::vector<size_t>*perm, Matrix *mtx)
     std::vector<size_t>* iperm;
     if (perm) {
       if (rhorho == perm->size ()) {
-	iperm = new std::vector<size_t>(rhorho); 
-	for (size_t i = 0; i < rhorho; i++)
-	  (*iperm)[i] = (*perm)[i];
+	iperm = new std::vector<size_t>(rhorho);
+	std::memmove (iperm->data (), perm->data (), rhorho * sizeof(double));
       }
       else {
 	delete iperm;
@@ -196,8 +194,8 @@ incompatible with given matrix"));
     }
 
     std::vector<size_t> cperm (iperm->size ());
-    for (size_t jj = 0; jj < cperm.size (); jj++)
-      cperm[jj] = (*iperm)[jj];
+    std::memmove (cperm.data (), iperm->data (),
+		  cperm.size () * sizeof(double));
     std::sort (cperm.begin (), cperm.end ());
     for (size_t jj = 0; jj < cperm.size (); jj++) {
       if (cperm[jj] != jj) {
@@ -390,8 +388,7 @@ Matrix::multiply (int direction, std::vector<double> *vec)
 	for (size_t i = 0; i < data->size (); i++)
 	  M->data[i] = (*data)[i];
 	V = gsl_vector_alloc (vec->size ());
-	for (size_t i = 0; i < vec->size (); i++)
-	  V->data[i] = (*vec)[i];
+	std::memmove (V->data, vec->data (), vec->size () * sizeof(double));
 	Y = gsl_vector_calloc (rows);
 	int rc = gsl_blas_dgemv(CblasNoTrans, 1.0, M, V, 0.0, Y);
 	if (0 == rc) {
@@ -411,11 +408,9 @@ Matrix::multiply (int direction, std::vector<double> *vec)
     else {
       if (rows == vec->size ()) {
 	gsl_matrix *M = gsl_matrix_alloc(rows, cols);
-	for (size_t i = 0; i < data->size (); i++)
-	  M->data[i] = (*data)[i];
+	std::memmove (M->data, data->data (), data->size () * sizeof(double));
 	gsl_vector *V = gsl_vector_alloc (vec->size ());
-	for (size_t i = 0; i < vec->size (); i++)
-	  V->data[i] = (*vec)[i];
+	std::memmove (V->data, vec->data (), vec->size () * sizeof(double));
 	gsl_vector *Y = gsl_vector_calloc (cols);
 	int rc = gsl_blas_dgemv(CblasTrans, 1.0, M, V, 0.0, Y);
 	if (0 == rc) {
@@ -465,14 +460,10 @@ Matrix::multiply (Matrix *rv)
 
       double *l_data = new double[l_rows * l_cols];
       double *r_data = new double[r_rows * r_cols];
-      double *c_data = new double[c_rows * c_cols];
-	
-      for (size_t o = 0; o < (l_rows * l_cols); o++)
-	l_data[o] = (*ld)[o];
-      for (size_t o = 0; o < (r_rows * r_cols); o++)
-	r_data[o] = (*rd)[o];
-      for (size_t o = 0; o < (c_rows * c_cols); o++)
-	c_data[o] = 0.0;
+      double *c_data = new double[c_rows * c_cols]();
+
+      std::memmove (l_data, ld->data (), l_rows * l_cols * sizeof(double));
+      std::memmove (r_data, rd->data (), r_rows * r_cols * sizeof(double));
 
       gsl_matrix_view L = gsl_matrix_view_array (l_data, l_rows, l_cols);
       gsl_matrix_view R = gsl_matrix_view_array (r_data, r_rows, r_cols);
@@ -488,8 +479,7 @@ Matrix::multiply (Matrix *rv)
       (*ndims)[1] = c_cols;
       std::vector<double> *ndata = new std::vector<double>(c_rows * c_cols);
       ndata->resize (c_rows * c_cols);
-      for (size_t o = 0; o < (c_rows * c_rows); o++)
-	(*ndata)[o] = c_data[o];
+      std::memmove (ndata->data (), c_data, c_rows * c_cols * sizeof(double));
     
       mtx = new Matrix (ndims, ndata);
     
@@ -522,14 +512,6 @@ Matrix::transpose (antlrcpp::Any &permutation)
   else rc = do_transpose (nullptr, this);
   return rc;
 }
-
-#if 0
-Matrix *
-Matrix::transpose ()
-{
-  return do_transpose (nullptr, this);
-}
-#endif
 
 double
 Matrix::sum ()
@@ -571,15 +553,13 @@ Matrix::determinant ()
 
   if (rows == cols) {
     gsl_matrix *C = gsl_matrix_alloc ((*dims)[1], (*dims)[0]);
-    for (size_t i = 0; i < data->size (); i++)
-      C->data[i] = (*data)[i];
+    std::memmove (C->data, data->data (), data->size () * sizeof(double));
     gsl_permutation *P = gsl_permutation_calloc (rows);
 
     int signum;
     int rc =  gsl_linalg_LU_decomp(C, P, &signum);
-    if (rc == 0) {
+    if (rc == 0) 
       det = gsl_linalg_LU_det(C, signum);
-    }
     else {
       set_errmsg (std::string ("Determinant failed in decompoosition."));
     }
@@ -602,8 +582,7 @@ Matrix::inverse ()
 
   if (rows == cols) {
     gsl_matrix *C = gsl_matrix_alloc ((*dims)[1], (*dims)[0]);
-    for (size_t i = 0; i < data->size (); i++)
-      C->data[i] = (*data)[i];
+    std::memmove (C->data, data->data (), data->size () * sizeof(double));
     gsl_permutation *P = gsl_permutation_calloc (rows);
     gsl_matrix *I = gsl_matrix_alloc (rows, cols);
 

@@ -63,7 +63,7 @@ OpStar		  	: '*';	    	// nullptr             dyadicStar
 OpSlash		  	: '/';		// monadicSlash	       dyadicSlash
 OpPlus		  	: '+';		// nullptr	       dyadicPlus
 OpMinus		  	: '-';		// monadicMinus	       dyadicMinus
-OpDollar		: '$';		// monadicTranspose    dyadicTranspose
+OpDollar		: '$';		// monadicTranspose    nullptr
 OpPercent		: '%';		// nullptr	       nullptr
 OpHat		  	: '^';		// nullptr	       dyadicHat
 OpLn			: 'ln';		// monadicLn	       nullptr
