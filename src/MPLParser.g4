@@ -114,10 +114,11 @@ eos	: {isFromCmdLine()}? Semicolon | EOL
 	;
 
 
+//      	| <assoc = right> op
+//	    (OpenSquare expr CloseSquare)? expr 	# MPLQualMono
 expr	: <assoc = right> expr op expr		# MPLDyadic
-      	| <assoc = right> op expr 		# MPLMonadic
       	| <assoc = right> op
-	    OpenSquare op_or_expr CloseSquare expr 	# MPLQualMono
+	  (OpenSquare expr CloseSquare)? expr 	# MPLMonadic
 	| OpenPar expr ClosePar			# MPLParen
 	| expr OpenSquare expr CloseSquare	# MPLIndex 
     	| identifier = id			# MPLIdentifier
@@ -153,7 +154,7 @@ expr	: <assoc = right> expr op expr		# MPLDyadic
 //           std::vector<ParseTree *> children;
 // 
 
-op_or_expr : op | expr ;
+//op_or_expr : op | expr ;
 	
 op	: OpStar
 	| OpSlash

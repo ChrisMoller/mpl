@@ -416,32 +416,44 @@ MPLVisitor::visitMPLParen(MPLParser::MPLParenContext *ctx)
 }
 
 /*** monadics ***/
+#if 0
+antlrcpp::Any
+MPLVisitor::visitMPLQualMono(MPLParser::MPLQualMonoContext *ctx)
+{
+  antlrcpp::Any result = Error(Error::ERROR_INTERNAL, " visitMPLQualMono");
+
+  size_t n = ctx->children.size();
+
+  std::cout << "qual " << n << std::endl;
+  return result;
+}
+#endif
 
 antlrcpp::Any
 MPLVisitor::visitMPLMonadic(MPLParser::MPLMonadicContext *ctx)
 {
   Token *token = ctx->op ()->getStart ();
-#ifdef SHOW_TRACE
-  std::string indent = std::string (3 * depth, ' ');
-  std::cout << indent << "Mo " << token->getText () << std::endl;
-#endif
   auto token_idx = token->getType();
   antlrcpp::Any result = Error(Error::ERROR_INTERNAL, " visitMPLMonadic");
   
   size_t n = ctx->children.size();
-  
-  if (n != 2) {
-    result = Error(Error::ERROR_MALFORMED_EXPRESSION);
+
+  antlrcpp::Any qual_any;
+  antlrcpp::Any right_any;
+  if (n == 2) {
+    qual_any  = nullptr;
+    right_any = ctx->children[1]->accept(this);
+  }
+  else if (n == 5) {
+    qual_any  = ctx->children[2]->accept(this);
+    right_any = ctx->children[4]->accept(this);
+  }
+  else {
+    result = Error(Error::ERROR_MALFORMED_EXPRESSION,
+		   ", invalid parameter count");
     return result;
   }
 
-#ifdef SHOW_TRACE
-  depth++;
-#endif
-  antlrcpp::Any right_any = ctx->children[1]->accept(this);
-#ifdef SHOW_TRACE
-  --depth;
-#endif
   if (right_any.get_typeinfo() == typeid(std::string)) {
     std::string ss = right_any.as<std::string>();
     right_any = get_symbol_value (ss);
@@ -453,13 +465,13 @@ MPLVisitor::visitMPLMonadic(MPLParser::MPLMonadicContext *ctx)
 
   if (right_any.isNotNull ()) {
     mfunc fcn = monadic_get_func (token_idx);
-    if (fcn) (*fcn)(result, right_any);
+    if (fcn) (*fcn)(result, right_any, qual_any);
     else {
-      result = Error(Error::ERROR_MALFORMED_EXPRESSION);
+      result = Error(Error::ERROR_MALFORMED_EXPRESSION, ", invalid operation");
     }
   }
   else {
-    result = Error(Error::ERROR_MALFORMED_EXPRESSION);
+    result = Error(Error::ERROR_MALFORMED_EXPRESSION, ", null monadic operand");
   }
 
   return result;

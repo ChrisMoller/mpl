@@ -43,6 +43,11 @@ public:
   antlrcpp::Any
   visitMPLMonadic(MPLParser::MPLMonadicContext *ctx) override;
 
+#if 0
+  antlrcpp::Any
+  visitMPLQualMono(MPLParser::MPLQualMonoContext *ctx) override;
+#endif
+
   antlrcpp::Any
   visitMPLDyadic(MPLParser::MPLDyadicContext *ctx) override;
 

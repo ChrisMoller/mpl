@@ -45,7 +45,8 @@ static double fragmentRand   (double rv)
 }
 
 static void
-do_monadic (antlrcpp::Any &rc, monadic_op op, antlrcpp::Any &right)
+do_monadic (antlrcpp::Any &rc, monadic_op op, antlrcpp::Any &right,
+	    antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     double rv = right.as<double>();
@@ -72,151 +73,151 @@ do_monadic (antlrcpp::Any &rc, monadic_op op, antlrcpp::Any &right)
 }
 
 static void
-monadicSlash (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicSlash (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentInvert, right);
+  do_monadic (rc, fragmentInvert, right, qual);
 }
 
 static void
-monadicMinus (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicMinus (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentNegate, right);
+  do_monadic (rc, fragmentNegate, right, qual);
 }
 
 static void
-monadicLn (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicLn (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentLn, right);
+  do_monadic (rc, fragmentLn, right, qual);
 }
 
 static void
-monadicLog (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicLog (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentLog10, right);
+  do_monadic (rc, fragmentLog10, right, qual);
 }
 
 static void
-monadicExp (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicExp (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentExp, right);
+  do_monadic (rc, fragmentExp, right, qual);
 }
 
 static void
-monadicRoot (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicRoot (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentRoot, right);
+  do_monadic (rc, fragmentRoot, right, qual);
 }
 
 static void
-monadicSin (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicSin (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentSin, right);
+  do_monadic (rc, fragmentSin, right, qual);
 }
 
 static void
-monadicCos (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicCos (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentCos, right);
+  do_monadic (rc, fragmentCos, right, qual);
 }
 
 static void
-monadicTan (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicTan (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentTan, right);
+  do_monadic (rc, fragmentTan, right, qual);
 }
 
 static void
-monadicAsin (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicAsin (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentAsin, right);
+  do_monadic (rc, fragmentAsin, right, qual);
 }
 
 static void
-monadicAcos (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicAcos (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentAcos, right);
+  do_monadic (rc, fragmentAcos, right, qual);
 }
 
 static void
-monadicAtan (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicAtan (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentAtan, right);
+  do_monadic (rc, fragmentAtan, right, qual);
 }
 
 static void
-monadicSind (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicSind (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentSind, right);
+  do_monadic (rc, fragmentSind, right, qual);
 }
 
 static void
-monadicCosd (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicCosd (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentCosd, right);
+  do_monadic (rc, fragmentCosd, right, qual);
 }
 
 static void
-monadicTand (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicTand (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentTand, right);
+  do_monadic (rc, fragmentTand, right, qual);
 }
 
 static void
-monadicAsind (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicAsind (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentAsind, right);
+  do_monadic (rc, fragmentAsind, right, qual);
 }
 
 static void
-monadicAcosd (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicAcosd (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentAcosd, right);
+  do_monadic (rc, fragmentAcosd, right, qual);
 }
 
 static void
-monadicAtand (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicAtand (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentAtand, right);
+  do_monadic (rc, fragmentAtand, right, qual);
 }
 
 static void
-monadicBar (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicBar (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentBar, right);
+  do_monadic (rc, fragmentBar, right, qual);
 }
 
 static void
-monadicBang (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicBang (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentBang, right);
+  do_monadic (rc, fragmentBang, right, qual);
 }
 
 static void
-monadicCeil (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicCeil (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentCeil, right);
+  do_monadic (rc, fragmentCeil, right, qual);
 }
 
 static void
-monadicFloor (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicFloor (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentFloor, right);
+  do_monadic (rc, fragmentFloor, right, qual);
 }
 
 static void
-monadicRound (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicRound (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentRound, right);
+  do_monadic (rc, fragmentRound, right, qual);
 }
 
 static void
-monadicRand (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicRand (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic (rc, fragmentRand, right);
+  do_monadic (rc, fragmentRand, right, qual);
 }
 
 static void
-monadicShape (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicShape (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     rc = 0.0;
@@ -237,7 +238,7 @@ monadicShape (antlrcpp::Any &rc, antlrcpp::Any &right)
 }
 
 static void
-monadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     double rv = right.as<double>();
@@ -263,7 +264,7 @@ monadicTranspose (antlrcpp::Any &rc, antlrcpp::Any &right)
 }
 
 static void
-monadicRange (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicRange (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     double rv = right.as<double>();
@@ -293,7 +294,7 @@ static bool ety_sort_up (sort_ety i, sort_ety j){  return (i.d < j.d); }
 static bool ety_sort_dn (sort_ety i, sort_ety j){  return (i.d > j.d); }
 
 static void
-do_monadic_grade (antlrcpp::Any &rc, ety_sort_func func, antlrcpp::Any &right)
+do_monadic_grade (antlrcpp::Any &rc, ety_sort_func func, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     double rv = right.as<double>();
@@ -348,19 +349,19 @@ do_monadic_grade (antlrcpp::Any &rc, ety_sort_func func, antlrcpp::Any &right)
 }
 
 static void
-monadicGradeUp (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicGradeUp (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic_grade (rc, ety_sort_up, right);
+  do_monadic_grade (rc, ety_sort_up, right, qual);
 }
 
 static void
-monadicGradeDown (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicGradeDown (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
-  do_monadic_grade (rc, ety_sort_dn, right);
+  do_monadic_grade (rc, ety_sort_dn, right, qual);
 }
 
 static void
-monadicDeterminant (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicDeterminant (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(Matrix *)) {
     Matrix *rv = right.as<Matrix *>();
@@ -379,7 +380,7 @@ monadicDeterminant (antlrcpp::Any &rc, antlrcpp::Any &right)
 }
 
 static void
-monadicInverse (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicInverse (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(Matrix *)) {
     Matrix *rv  = right.as<Matrix *>();
@@ -398,7 +399,7 @@ monadicInverse (antlrcpp::Any &rc, antlrcpp::Any &right)
 }
 
 static void
-monadicSum (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicSum (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     double rv = right.as<double>();
@@ -428,7 +429,7 @@ monadicSum (antlrcpp::Any &rc, antlrcpp::Any &right)
 }
 
 static void
-monadicProduct (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicProduct (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     double rv = right.as<double>();
@@ -458,7 +459,7 @@ monadicProduct (antlrcpp::Any &rc, antlrcpp::Any &right)
 }
 
 static void
-monadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     double dim  = right.as<double>();
@@ -471,7 +472,7 @@ monadicIdentity (antlrcpp::Any &rc, antlrcpp::Any &right)
 }
 
 static void
-monadicLeft (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicLeft (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   if (right.get_typeinfo() == typeid(double)) {
     double rv = right.as<double>();
@@ -503,7 +504,7 @@ monadicLeft (antlrcpp::Any &rc, antlrcpp::Any &right)
 }
 
 static void
-monadicRight (antlrcpp::Any &rc, antlrcpp::Any &right)
+monadicRight (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
 {
   std::cout << "right\n";
   if (right.get_typeinfo() == typeid(double)) {
