@@ -79,8 +79,12 @@ Matrix::Matrix (monadic_op op, Matrix *rv)
 
 Matrix::Matrix (Matrix *rv)
 {
-  data = rv->data;
-  dims = rv->dims;
+  data = new std::vector<double>(rv->data->size ());
+  std::memmove (data->data (), rv->data->data (),
+		rv->data->size () * sizeof(double));
+  dims = new std::vector<size_t>(rv->dims->size ());
+  std::memmove (dims->data (), rv->dims->data (),
+		rv->dims->size () * sizeof(size_t));
 }
 
 Matrix::Matrix (dyadic_op op, double lv, Matrix *rv)
@@ -116,6 +120,67 @@ Matrix::~Matrix ()
   delete dims;
   delete data;
 }
+
+Matrix *
+Matrix::shift (double shift, antlrcpp::Any &axes)
+{
+  size_t rhorho = dims->size ();
+  auto incrs = std::vector<size_t>(rhorho, 0);
+  if (axes.get_typeinfo() == typeid(std::vector<double>*)) {
+    std::vector<double> *ixs = axes.as<std::vector<double>*>();
+    for (size_t i = 0; i < ixs->size (); i++) {
+      if ((*ixs)[i] < rhorho) {
+	size_t ix = static_cast<size_t>((*ixs)[i]);
+	shift = fmod (shift, static_cast<double>((*dims)[ix]));
+	if  (shift < 0.0) shift += static_cast<double>((*dims)[ix]);
+	incrs[ix] = shift;
+      }
+      else return nullptr;
+    }
+  }
+  else if (axes.get_typeinfo() == typeid(double)) {
+    size_t ix = static_cast<size_t>(axes.as<double>());
+    if (ix < rhorho) {
+      shift = fmod (shift, static_cast<double>((*dims)[ix]));
+      if  (shift < 0.0) shift += static_cast<double>((*dims)[ix]);
+      incrs[ix] = shift;
+    }
+    else return nullptr;
+  }
+  else {
+    shift = fmod (shift, static_cast<double>((*dims)[rhorho - 1]));
+    if  (shift < 0.0) shift += static_cast<double>((*dims)[rhorho - 1]);
+    incrs[rhorho - 1] = static_cast<size_t>(shift);
+  }
+  std::vector<size_t> *new_dims = new std::vector<size_t>(rhorho);
+  std::vector<double> *new_data = new std::vector<double>(data->size ());
+  std::memmove (new_dims->data (), dims->data (),
+		rhorho * sizeof (double));
+  auto ctrs = std::vector<size_t>(rhorho, 0);
+  auto mpys = std::vector<size_t>(rhorho);
+  mpys[rhorho - 1] = 1;
+  for (int i = rhorho - 2; i >= 0; i--) mpys[i] = mpys[i+1] * (*dims)[i+1];
+  bool run = true;
+  size_t dest = 0;
+  while (run) {
+    size_t carry = 1;
+    size_t offset = 0;
+    for (int i = rhorho - 1; i >= 0; i--) {
+      offset += ((ctrs[i] + incrs[i]) % (*dims)[i]) * mpys[i];
+      ctrs[i] += carry;
+      if (ctrs[i] >= (*dims)[i]) {
+	ctrs[i] = 0;
+	carry = 1;
+      }
+      else carry = 0;
+    }
+    (*new_data)[dest++] = (*data)[offset];
+    if (carry) run = false;
+  }
+  Matrix *mtx = new Matrix (new_dims, new_data);
+  return mtx;
+}
+
 
 class DimCounter
 {

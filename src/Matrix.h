@@ -25,15 +25,15 @@ public:
 	
 
   bool isomorphic (Matrix *rv);
-  Matrix * inverse ();
+  Matrix *inverse ();
   double determinant ();
   double sum ();
   double product ();
-  Matrix * transpose (antlrcpp::Any &permutation);
-  Matrix * multiply (Matrix *);
+  Matrix *transpose (antlrcpp::Any &permutation);
+  Matrix *multiply (Matrix *);
   std::vector<double> * multiply (int direction, std::vector<double> *);
   std::vector<double> * solve (int direction, std::vector<double> *);
-  Matrix * solve (Matrix *);
+  Matrix *solve (Matrix *);
   void fill (double v);
   void copy (antlrcpp::Any &v);
   void reshape (antlrcpp::Any &v);
@@ -41,6 +41,7 @@ public:
   antlrcpp::Any rho ();
   antlrcpp::Any values ();
   void print ();
+  Matrix *shift (double shift, antlrcpp::Any &axes);
 
   // diagnostics
   

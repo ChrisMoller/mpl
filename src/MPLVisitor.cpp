@@ -416,18 +416,6 @@ MPLVisitor::visitMPLParen(MPLParser::MPLParenContext *ctx)
 }
 
 /*** monadics ***/
-#if 0
-antlrcpp::Any
-MPLVisitor::visitMPLQualMono(MPLParser::MPLQualMonoContext *ctx)
-{
-  antlrcpp::Any result = Error(Error::ERROR_INTERNAL, " visitMPLQualMono");
-
-  size_t n = ctx->children.size();
-
-  std::cout << "qual " << n << std::endl;
-  return result;
-}
-#endif
 
 antlrcpp::Any
 MPLVisitor::visitMPLMonadic(MPLParser::MPLMonadicContext *ctx)
