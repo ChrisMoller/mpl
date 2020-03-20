@@ -133,12 +133,15 @@ bool isTestMode () {bool rc = test_mode ? true : false; return rc; }
 static void
 eval_string (char *optarg)
 {
+  size_t offset = 0;
   if (optarg[0] == '\'' &&
       optarg[strlen (optarg) -1] == '\'') {
     optarg[strlen (optarg) -1] = 0;
-    do_eval (SOURCE_CMDLINE, false, &optarg[1]);
+    offset = 1;
   }
-  else do_eval (SOURCE_CMDLINE, false, optarg);
+  std::string str = std::string (optarg+offset);
+  if (str.back () != ';') str.push_back (';');
+  do_eval (SOURCE_CMDLINE, false, str.data ());
 }
 
 int
@@ -204,28 +207,11 @@ main (int ac, char *av[])
 	  std::stringstream buffer;
 	  buffer << file.rdbuf();
 	  std::string str = buffer.str ();
-	  if (!str.empty ()) {
+	  if (!str.empty ())
 	    do_eval (SOURCE_FILE, show_exp, str);
-	  }
 	}
 	else std::cerr << "open failed\n";
       }
-
-
-#if 0
-      if (file.is_open ()) {
-	std::string str;
-	int i = 0;
-	 while (! file.eof() ) {
-	   getline (file, str);
-	   if (!str.empty ()) {
-	     do_eval (SOURCE_FILE, show_exp, str);
-	   }
-	 }
-	 file.close();
-      }
-      else std::cerr << "open failed\n";
-#endif
     }
   }
 
