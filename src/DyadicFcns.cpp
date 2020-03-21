@@ -590,6 +590,14 @@ dyadicRight (antlrcpp::Any &rc, antlrcpp::Any &left,
       do_vector_shift (rc, -shift, right, qual);
     }
     else if (right.get_typeinfo() == typeid(Matrix*)) {
+      Matrix *rv = right.as<Matrix *>();
+      Matrix *mtx =rv->shift (-shift, qual);
+      if (mtx) rc = mtx;
+      else {
+	rc = Error(Error::ERROR_DIMENSION_MISMATCH, ", axes");
+	std::string em = mtx->get_errmsg ();
+	std::cout << em << std::endl;
+      }
     }
     else {
       rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic left operation");

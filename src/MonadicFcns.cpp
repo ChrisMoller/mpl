@@ -485,6 +485,14 @@ monadicLeft (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
     do_vector_shift (rc, 1.0, right, qual);
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
+    Matrix *rv = right.as<Matrix *>();
+    Matrix *mtx =rv->shift (1.0, qual);
+    if (mtx) rc = mtx;
+    else {
+      rc = Error(Error::ERROR_DIMENSION_MISMATCH, ", axes");
+      std::string em = mtx->get_errmsg ();
+      std::cout << em << std::endl;
+    }
   }
   else {
     rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", left operation");
@@ -502,6 +510,14 @@ monadicRight (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
     do_vector_shift (rc, -1.0, right, qual);
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
+    Matrix *rv = right.as<Matrix *>();
+    Matrix *mtx =rv->shift (-1.0, qual);
+    if (mtx) rc = mtx;
+    else {
+      rc = Error(Error::ERROR_DIMENSION_MISMATCH, ", axes");
+      std::string em = mtx->get_errmsg ();
+      std::cout << em << std::endl;
+    }
   }
   else {
     rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", left operation");
