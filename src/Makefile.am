@@ -94,8 +94,11 @@ cov-report:
 	lcov --compat-libtool --directory . --capture \
                  --output-file coverage/app.info
 	lcov --remove coverage/app.info -o coverage/real.info \
-           '*MPLLexer*' '*MPLParser*'
-	genhtml -o coverage/ coverage/real.info
+           '*MPLLexer*' \
+           '*MPLParser*' \
+           '/usr/include/*' \
+           '*antlr4-runtime*'
+	genhtml --sort -o coverage/ coverage/real.info
 
 cov:
 	make cov-report
