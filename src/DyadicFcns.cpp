@@ -534,9 +534,10 @@ do_vector_shift (antlrcpp::Any &rc, double shift,
 {
   std::vector<double> *right_vec = right.as<std::vector<double>*>();
   std::vector<double> *rv = new std::vector<double> (right_vec->size ());
-  shift = fmod (shift, static_cast<double>(right_vec->size ()));
-  if (shift < 0.0) shift += static_cast<double>(right_vec->size ());
-  int lv = static_cast<int>(shift);
+  double dshift = fmod (fabs (shift), static_cast<double>(right_vec->size ()));
+  if (shift < 0.0) 
+    dshift = static_cast<double>(right_vec->size ()) - dshift;
+  int lv = static_cast<int>(dshift);
   double *fm = right_vec->data ();
   double *to = rv->data ();
   std::memmove (to, fm + lv, (right_vec->size () - lv) * sizeof(double));
@@ -555,20 +556,28 @@ dyadicLeft (antlrcpp::Any &rc, antlrcpp::Any &left,
       rc = rv;
     }
     else if (right.get_typeinfo()  == typeid(std::vector<double>*)) {
-      do_vector_shift (rc, shift, right, qual);
+      do_vector_shift (rc, left, right, qual);
     }
     else if (right.get_typeinfo() == typeid(Matrix*)) {
       Matrix *rv = right.as<Matrix *>();
-      Matrix *mtx =rv->shift (shift, qual);
+      Matrix *mtx =rv->shift (SHIFT_FORWARD, left, qual);
       if (mtx) rc = mtx;
       else {
-	rc = Error(Error::ERROR_DIMENSION_MISMATCH, ", axes");
-	std::string em = mtx->get_errmsg ();
-	std::cout << em << std::endl;
+	rc = Error(Error::ERROR_DIMENSION_MISMATCH, rv->get_errmsg ());
       }
     }
     else {
       rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic left operation");
+    }
+  }
+  else if (left.get_typeinfo()  == typeid(std::vector<double>*)) {
+    if (right.get_typeinfo() == typeid(Matrix*)) {
+      Matrix *rv = right.as<Matrix *>();
+      Matrix *mtx =rv->shift (SHIFT_FORWARD, left, qual);
+      if (mtx) rc = mtx;
+      else {
+	rc = Error(Error::ERROR_DIMENSION_MISMATCH, rv->get_errmsg ());
+      }
     }
   }
   else {
@@ -590,17 +599,26 @@ dyadicRight (antlrcpp::Any &rc, antlrcpp::Any &left,
       do_vector_shift (rc, -shift, right, qual);
     }
     else if (right.get_typeinfo() == typeid(Matrix*)) {
+
       Matrix *rv = right.as<Matrix *>();
-      Matrix *mtx =rv->shift (-shift, qual);
+      Matrix *mtx =rv->shift (SHIFT_REVERSE, left, qual);
       if (mtx) rc = mtx;
       else {
-	rc = Error(Error::ERROR_DIMENSION_MISMATCH, ", axes");
-	std::string em = mtx->get_errmsg ();
-	std::cout << em << std::endl;
+	rc = Error(Error::ERROR_DIMENSION_MISMATCH, rv->get_errmsg ());
       }
     }
     else {
       rc = Error(Error::ERROR_UNKNOWN_DATA_TYPE, ", dyadic left operation");
+    }
+  }
+  else if (left.get_typeinfo()  == typeid(std::vector<double>*)) {
+    if (right.get_typeinfo() == typeid(Matrix*)) {
+      Matrix *rv = right.as<Matrix *>();
+      Matrix *mtx = rv->shift (SHIFT_REVERSE, left, qual);
+      if (mtx) rc = mtx;
+      else {
+	rc = Error(Error::ERROR_DIMENSION_MISMATCH, rv->get_errmsg ());
+      }
     }
   }
   else {

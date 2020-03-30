@@ -87,6 +87,9 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = mpl$(EXEEXT)
+am__append_1 = -fprofile-arcs -ftest-coverage
+am__append_2 = -fprofile-arcs -ftest-coverage
+am__append_3 = -fprofile-arcs
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -190,7 +193,7 @@ AWK = gawk
 CPPFLAGS = 
 CXX = g++
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -296,14 +299,12 @@ AUTOMAKE_OPTIONS = dejagnu
 
 #$(bin_PROGRAMS)-eval.o: eval.c opsdata.h printext.h node.h
 AM_CPPFLAGS = -std=c++11 -Wno-attributes $(GSL_CFLAGS) \
-   -I/usr/local/antlr4/runtime/Cpp/run/usr/local/include/antlr4-runtime 
-
-
-# AM_CPPFLAGS += --coverage
-mpl_CFLAGS = -std=c++11 $(GSL_CFLAGS)
-mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib -lantlr4-runtime \
-                 $(GSL_LIBS)
-
+	-I/usr/local/antlr4/runtime/Cpp/run/usr/local/include/antlr4-runtime \
+	$(am__append_1)
+mpl_CFLAGS = -std=c++11 $(GSL_CFLAGS) $(am__append_2)
+mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib \
+	-lantlr4-runtime $(GSL_LIBS) $(am__append_3)
+AM_LDFLAGS = -fprofile-arcs
 ANTLRFLAGS = -visitor -listener
 ANTLRJAR = /home/moller/javastuff/antlr-4.8-complete.jar
 all: $(BUILT_SOURCES)
@@ -697,7 +698,8 @@ MPLParser.h MPLParser.cpp  : MPLParser.g4
 #VALGRIND_FLAGS = --gen-suppressions=all --run-libc-freeres=yes
 
 valgrind.log : mpl
-	valgrind $(VALGRIND_FLAGS) --log-file=$@ ./mpl  -e '(2 0 1) $ (2 3 4#1::24);' 
+	valgrind $(VALGRIND_FLAGS) --log-file=$@ \
+             ./mpl  -e '(2 0 1) $ (2 3 4#1::24);' 
 
 save:
 	gitpush
@@ -705,7 +707,34 @@ save:
 clean-local: clean-local-check
 .PHONY: clean-local-check
 clean-local-check:
-	rm -rf clc-parse.c clc-parse.h clc-lex.c
+	rm -rf clc-parse.c clc-parse.h clc-lex.c *.gcno
+
+cov-reset:
+	rm -fr coverage
+	find . -name "*.gcda" -exec rm {} \;
+	lcov --directory . --zerocounters
+
+cov-report:
+	mkdir -p coverage
+	lcov --compat-libtool --directory . --capture \
+                 --output-file coverage/app.info
+	lcov --remove coverage/app.info -o coverage/real.info \
+           '*MPLLexer*' '*MPLParser*'
+	genhtml -o coverage/ coverage/real.info
+
+cov:
+	make cov-report
+	google-chrome coverage/index.html &
+
+#clean-local:
+#	@make cov-reset
+
+#check:
+#	@make cov@find . -name "*.gcda" -exec rm {} \;
+#	@lcov --directory . --zerocounters
+
+#check:
+#	@make cov
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

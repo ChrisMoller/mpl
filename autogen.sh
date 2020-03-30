@@ -9,4 +9,5 @@ else
         autoreconf --force --install --verbose || exit $?
 fi
 
-./configure
+./configure $1
+#./configure --enable-gcov

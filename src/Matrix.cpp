@@ -121,39 +121,20 @@ Matrix::~Matrix ()
   delete data;
 }
 
-Matrix *
-Matrix::shift (double shift, antlrcpp::Any &axes)
+static size_t
+fix_shift (double dshift, shift_direction_e direction, size_t dim)
 {
-  size_t rhorho = dims->size ();
-  auto incrs = std::vector<size_t>(rhorho, 0);
-  if (axes.get_typeinfo() == typeid(std::vector<double>*)) {
-    std::vector<double> *ixs = axes.as<std::vector<double>*>();
-    for (size_t i = 0; i < ixs->size (); i++) {
-      if ((*ixs)[i] < rhorho) {
-	size_t ix = static_cast<size_t>((*ixs)[i]);
-	shift = fmod (shift, static_cast<double>((*dims)[ix]));
-	if  (shift < 0.0) shift += static_cast<double>((*dims)[ix]);
-	incrs[ix] = shift;
-      }
-      else return nullptr;
-    }
-  }
-  else if (axes.get_typeinfo() == typeid(double)) {
-    size_t ix = static_cast<size_t>(axes.as<double>());
-    if (ix < rhorho) {
-      shift = fmod (shift, static_cast<double>((*dims)[ix]));
-      if  (shift < 0.0) shift += static_cast<double>((*dims)[ix]);
-      incrs[ix] = shift;
-    }
-    else return nullptr;
-  }
-  else {
-    shift = fmod (shift, static_cast<double>((*dims)[rhorho - 1]));
-    if  (shift < 0.0) shift += static_cast<double>((*dims)[rhorho - 1]);
-    incrs[rhorho - 1] = static_cast<size_t>(shift);
-  }
+  size_t rc;
+  if (direction == SHIFT_REVERSE) dshift = -dshift;
+  if  (dshift < 0.0) dshift += static_cast<double>(dim);
+  return static_cast<size_t>(dshift);
+}
+
+Matrix *
+Matrix::do_shift (Matrix *tp, size_t rhorho, std::vector<size_t>*incrs)
+{
   std::vector<size_t> *new_dims = new std::vector<size_t>(rhorho);
-  std::vector<double> *new_data = new std::vector<double>(data->size ());
+  std::vector<double> *new_data = new std::vector<double>(tp->data->size ());
   std::memmove (new_dims->data (), dims->data (),
 		rhorho * sizeof (double));
   auto ctrs = std::vector<size_t>(rhorho, 0);
@@ -166,7 +147,7 @@ Matrix::shift (double shift, antlrcpp::Any &axes)
     size_t carry = 1;
     size_t offset = 0;
     for (int i = rhorho - 1; i >= 0; i--) {
-      offset += ((ctrs[i] + incrs[i]) % (*dims)[i]) * mpys[i];
+      offset += ((ctrs[i] + (*incrs)[i]) % (*dims)[i]) * mpys[i];
       ctrs[i] += carry;
       if (ctrs[i] >= (*dims)[i]) {
 	ctrs[i] = 0;
@@ -179,6 +160,175 @@ Matrix::shift (double shift, antlrcpp::Any &axes)
   }
   Matrix *mtx = new Matrix (new_dims, new_data);
   return mtx;
+}
+
+Matrix *
+Matrix::shift (shift_direction_e direction, antlrcpp::Any &axes)
+{
+  size_t rhorho = dims->size ();
+  auto incrs = std::vector<size_t>(rhorho, 0);
+  if (axes.get_typeinfo() == typeid(std::vector<double>*)) {
+    /***
+	<<[a b c]2 3#::6
+    ***/
+    std::vector<double> *ixs = axes.as<std::vector<double>*>();
+    for (size_t i = 0; i < ixs->size (); i++) {
+      if ((*ixs)[i] < rhorho) {
+	size_t ix = static_cast<size_t>((*ixs)[i]);
+	incrs[ix] = fix_shift (1.0, direction, (*dims)[ix]);
+      }
+      else {
+	set_errmsg (std::string ("Invalid axes rank."));
+	return nullptr;
+      }
+    }
+  }
+  else if (axes.get_typeinfo() == typeid(double)) {
+    /***
+	<<[ a ]2 3#::6
+    ***/
+    size_t ix = static_cast<size_t>(axes.as<double>());
+    if (ix < rhorho) {
+      for (size_t i = 0; i < dims->size (); i++) {
+	incrs[ix] = fix_shift (1.0, direction, (*dims)[ix]);
+      }
+    }
+    else {
+      set_errmsg (std::string ("Invalid axes rank."));
+      return nullptr;
+    }
+  }
+  else if (axes.get_typeinfo() == typeid(nullptr)) {
+    /***
+	x<<2 3#::6			incrs[rhorho - 1] = shift
+    ***/
+    incrs[rhorho - 1] = fix_shift (1.0, direction, (*dims)[rhorho - 1]);
+  }
+  else {
+    set_errmsg (std::string ("Unknown axes datatype."));
+    return nullptr;
+  }
+
+  return do_shift (this, rhorho, &incrs);
+}
+  
+Matrix *
+Matrix::shift (shift_direction_e direction, antlrcpp::Any &shift,
+	       antlrcpp::Any &axes)
+{
+  size_t rhorho = dims->size ();
+  auto incrs = std::vector<size_t>(rhorho, 0);
+  if (axes.get_typeinfo() == typeid(std::vector<double>*)) {
+    std::vector<double> *ixs = axes.as<std::vector<double>*>();
+    for (size_t i = 0; i < ixs->size (); i++) {
+      if ((*ixs)[i] < rhorho) {
+	size_t ix = static_cast<size_t>((*ixs)[i]);
+	if (shift.get_typeinfo() == typeid(double)) {
+	  
+	  // x<<[a b c]2 3#::6
+
+	  double dshift = fabs (shift.as<double>());
+	  dshift = fmod (dshift, static_cast<double>((*dims)[ix]));
+	  if (direction == SHIFT_REVERSE) dshift = -dshift;
+	  if  (dshift < 0.0) dshift += static_cast<double>((*dims)[ix]);
+	  incrs[ix] = dshift;
+	}
+#if 0
+	else if (shift.get_typeinfo() == typeid(std::vector<double>*)) {
+	  
+	  // (x y z)<<[a b c]2 3#::6	// unnecessary
+
+	}
+#endif
+	else {
+	  set_errmsg (std::string ("Unknown shift datatype."));
+	  return nullptr;
+	}
+      }
+      else {
+	set_errmsg (std::string ("Invalid axes rank."));
+	return nullptr;
+      }
+    }
+  }
+  else if (axes.get_typeinfo() == typeid(double)) {
+    size_t ix = static_cast<size_t>(axes.as<double>());
+    if (ix < rhorho) {
+      if (shift.get_typeinfo() == typeid(double)) {
+	  
+	// x<<[ a ]2 3#::6
+
+	double dshift = fabs (shift.as<double>());
+	for (size_t i = 0; i < dims->size (); i++) {
+	  dshift = fmod (dshift, static_cast<double>((*dims)[ix]));
+	  if (direction == SHIFT_REVERSE) dshift = -dshift;
+	  if (dshift < 0.0) dshift += static_cast<double>((*dims)[ix]);
+	  incrs[ix] = dshift;
+	}
+      }
+#if 0
+      else if (shift.get_typeinfo() == typeid(std::vector<double>*)) {
+	
+	// (x y z)<<[ a ]2 3#::6		// makes no sense
+
+      }
+#endif
+      else {
+	set_errmsg (std::string ("Unknown shift datatype."));
+	return nullptr;
+      }
+    }
+    else {
+      set_errmsg (std::string ("Invalid axes rank."));
+      return nullptr;
+    }
+  }
+  else if (axes.get_typeinfo() == typeid(nullptr)) {
+    if (shift.get_typeinfo() == typeid(double)) {
+      
+      // x<<2 3#::6			incrs[rhorho - 1] = shift
+      
+      double dshift = shift.as<double>();
+      dshift = fmod (dshift, static_cast<double>((*dims)[rhorho - 1]));
+      if  (dshift < 0.0) dshift += static_cast<double>((*dims)[rhorho - 1]);
+      incrs[rhorho - 1] = static_cast<size_t>(dshift);
+    }
+    else if (shift.get_typeinfo() == typeid(std::vector<double>*)) {
+
+      // (x y z)<<2 3#::6
+      
+      if (axes.get_typeinfo() == typeid(nullptr)) {
+	auto vshift = shift.as<std::vector<double>*>();
+	if (rhorho == vshift->size ()) {
+	  for (size_t i = 0; i < rhorho; i++) {
+	    double dshift = fabs ((*vshift)[i]);
+	    dshift = fmod (dshift, static_cast<double>((*dims)[i]));
+	    if (direction == SHIFT_REVERSE) dshift = -dshift;
+	    if (dshift < 0.0) dshift += static_cast<double>((*dims)[i]);
+	    incrs[i] = dshift;
+	  }
+	}
+	else {
+	  set_errmsg (std::string ("Invalid shift rank."));
+	  return nullptr;
+	}
+      }
+      else {
+	set_errmsg (std::string ("Unknown axes datatype."));
+	return nullptr;
+      }
+    }
+    else {
+      set_errmsg (std::string ("Unknown shift datatype."));
+      return nullptr;
+    }
+  }
+  else {
+    set_errmsg (std::string ("Unknown axes datatype."));
+    return nullptr;
+  }
+
+  return do_shift (this, rhorho, &incrs);
 }
 
 

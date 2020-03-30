@@ -3,6 +3,11 @@
 #include "DyadicFcns.h"
 #include "MonadicFcns.h"
 
+typedef enum
+  {
+   SHIFT_FORWARD,
+   SHIFT_REVERSE
+  } shift_direction_e;
 
 
 class  Matrix {
@@ -41,7 +46,9 @@ public:
   antlrcpp::Any rho ();
   antlrcpp::Any values ();
   void print ();
-  Matrix *shift (double shift, antlrcpp::Any &axes);
+  Matrix *shift (shift_direction_e direction, antlrcpp::Any &shift,
+		 antlrcpp::Any &axes);
+  Matrix *shift (shift_direction_e direction, antlrcpp::Any &axes);
 
   // diagnostics
   
@@ -66,6 +73,8 @@ public:
   
 
 private:
+  Matrix *do_shift (Matrix *tp, size_t rhorho,
+		    std::vector<size_t>*incrs);
   std::vector<double> *data;
   std::vector<size_t> *dims;
   std::string errmsg;

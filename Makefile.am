@@ -6,3 +6,7 @@ RUNTESTFLAGS = --tool mpl MPL=`pwd`/src/mpl --srcdir $$srcdir/test
 
 save:
 	gitpush
+
+cov:
+	make check
+	make -C src cov

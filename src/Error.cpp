@@ -24,6 +24,7 @@ static std::vector<std::string> descriptions =
 Error::Error (int idx)
 {
   error = idx;
+  cmt = std::string ();
 }
 
 Error::Error (int idx, std::string str)
@@ -35,16 +36,20 @@ Error::Error (int idx, std::string str)
 void
 Error::print ()
 {
-  if (error > 0 && error < LAST_ERROR)
-    std::cout << descriptions[error] << cmt
-	      << std::endl;
+  if (error > 0 && error < LAST_ERROR) {
+    if (cmt.empty ())
+      std::cout << descriptions[error] << std::endl;
+    else
+      std::cout << descriptions[error] << ", " << cmt
+		<< std::endl;
+  }
 }
 
 void
 Error::print (std::string cmt)
 {
   if (error > 0 && error < LAST_ERROR)
-    std::cout << descriptions[error] << cmt
+    std::cout << descriptions[error] << ", " << cmt
 	      << std::endl;
 }
 

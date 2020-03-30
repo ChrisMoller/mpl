@@ -29,12 +29,17 @@ AUTOMAKE_OPTIONS = dejagnu
 AM_CPPFLAGS = -std=c++11 -Wno-attributes $(GSL_CFLAGS) \
    -I/usr/local/antlr4/runtime/Cpp/run/usr/local/include/antlr4-runtime 
 
-# AM_CPPFLAGS += --coverage
-
 mpl_CFLAGS = -std=c++11 $(GSL_CFLAGS)
 
-mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib -lantlr4-runtime \
-                 $(GSL_LIBS)
+mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib \
+      -lantlr4-runtime $(GSL_LIBS)
+
+if ENABLE_GCOV
+AM_CPPFLAGS += -fprofile-arcs -ftest-coverage
+mpl_CFLAGS += -fprofile-arcs -ftest-coverage
+mpl_LDFLAGS += -fprofile-arcs
+AM_LDFLAGS = -fprofile-arcs
+endif
 
 ANTLRFLAGS = -visitor -listener
 
@@ -66,7 +71,8 @@ MPLParser.h MPLParser.cpp  : MPLParser.g4
 #VALGRIND_FLAGS = --gen-suppressions=all --run-libc-freeres=yes
 
 valgrind.log : mpl
-	valgrind $(VALGRIND_FLAGS) --log-file=$@ ./mpl  -e '(2 0 1) $ (2 3 4#1::24);' 
+	valgrind $(VALGRIND_FLAGS) --log-file=$@ \
+             ./mpl  -e '(2 0 1) $ (2 3 4#1::24);' 
 
 save:
 	gitpush
@@ -74,4 +80,36 @@ save:
 clean-local: clean-local-check
 .PHONY: clean-local-check
 clean-local-check:
-	rm -rf clc-parse.c clc-parse.h clc-lex.c
+	rm -rf clc-parse.c clc-parse.h clc-lex.c *.gcno
+
+
+if ENABLE_GCOV
+cov-reset:
+	rm -fr coverage
+	find . -name "*.gcda" -exec rm {} \;
+	lcov --directory . --zerocounters
+
+cov-report:
+	mkdir -p coverage
+	lcov --compat-libtool --directory . --capture \
+                 --output-file coverage/app.info
+	lcov --remove coverage/app.info -o coverage/real.info \
+           '*MPLLexer*' '*MPLParser*'
+	genhtml -o coverage/ coverage/real.info
+
+cov:
+	make cov-report
+	google-chrome coverage/index.html &
+
+#clean-local:
+#	@make cov-reset
+
+#check:
+#	@make cov@find . -name "*.gcda" -exec rm {} \;
+#	@lcov --directory . --zerocounters
+
+
+#check:
+#	@make cov
+
+endif

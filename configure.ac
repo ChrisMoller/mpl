@@ -7,6 +7,15 @@ AC_CONFIG_HEADERS([config.h])
 
 AM_MAINTAINER_MODE([enable])
 
+
+AC_ARG_ENABLE([gcov],
+  [AS_HELP_STRING([--enable-gcov],
+    [use Gcov to test the test suite])],
+    [],
+    [enable_gcov=no])
+AM_CONDITIONAL([ENABLE_GCOV],[test '!' "$ENABLE_GCOV" = no])
+
+
 PKG_CHECK_MODULES([GSL], [gsl >= 1.15])
 AC_SUBST(GSL_CFLAGS)
 AC_SUBST(GSL_LIBS)

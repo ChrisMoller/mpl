@@ -486,7 +486,7 @@ monadicLeft (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
     Matrix *rv = right.as<Matrix *>();
-    Matrix *mtx =rv->shift (1.0, qual);
+    Matrix *mtx =rv->shift (SHIFT_FORWARD, qual);
     if (mtx) rc = mtx;
     else {
       rc = Error(Error::ERROR_DIMENSION_MISMATCH, ", axes");
@@ -511,7 +511,7 @@ monadicRight (antlrcpp::Any &rc, antlrcpp::Any &right, antlrcpp::Any &qual)
   }
   else if (right.get_typeinfo() == typeid(Matrix*)) {
     Matrix *rv = right.as<Matrix *>();
-    Matrix *mtx =rv->shift (-1.0, qual);
+    Matrix *mtx =rv->shift (SHIFT_REVERSE, qual);
     if (mtx) rc = mtx;
     else {
       rc = Error(Error::ERROR_DIMENSION_MISMATCH, ", axes");
