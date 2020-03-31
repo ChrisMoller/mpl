@@ -193,7 +193,7 @@ AWK = gawk
 CPPFLAGS = 
 CXX = g++
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2
+CXXFLAGS = -g
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -728,6 +728,10 @@ cov-report:
 cov:
 	make cov-report
 	google-chrome coverage/index.html &
+
+cov-txt:
+	make cov-report
+	gcovr -u | cut -c -64 >gcovr.txt
 
 #clean-local:
 #	@make cov-reset

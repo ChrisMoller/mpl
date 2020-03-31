@@ -104,6 +104,10 @@ cov:
 	make cov-report
 	google-chrome coverage/index.html &
 
+cov-txt:
+	make cov-report
+	gcovr -u | cut -c -64 >gcovr.txt
+
 #clean-local:
 #	@make cov-reset
 

@@ -591,7 +591,7 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
 	    print_str (show, lexpr,ss);
 	  rc = newres;
 	}
-#if 0
+#if 1
 	else if (newres.get_typeinfo() == typeid(antlr4::tree::ParseTree*)) {
 	  antlr4::tree::ParseTree *tree =
 	    newres.as<antlr4::tree::ParseTree *>();
