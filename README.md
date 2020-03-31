@@ -8,20 +8,33 @@ Yet another array/math oriented language w/o APL's weird symbols and J's general
 But just as a sample of what works so far, here's a test log:  
 
 #tests/test2.mpl
+
 *ccc			<!-- ok     show 6668	-->ccc			<!-- ok     show 6668	-->
+
 *	\>\> 6668
+
 *aaa + 7			<!-- ok     show 15	-->aaa + 7			<!-- ok     show 15	-->
+
 *	\>\> 15
+
 *bbb			<!-- ok     uninitialised: should show bbb --> >> bbb
+
 *aaa+ccc			<!-- ok     show 6676	-->aaa+ccc			<!-- ok     show 6676	-->
+
 *	\>\> 6676
+
 *aaa+ccc+bbb		<!-- ok     show -59990 -->aaa+ccc+bbb		<!-- ok     show -59990 -->
+
 *	\>\> -59990
-*tests/test3.mpl
+
+#tests/test3.mpl
+
 *ccc			<!-- ok     show 6668	-->ccc			<!-- ok     show 6668	-->
+
 *	\>\> 6668
 
 #tests/testarray.mpl
+
 *1 2 3 4 5 * 6>> 6 12 18 24 30 
 *7 * 8 9 10 11>> 56 63 70 77 
 *1 2 3 4 5 * 6 7 8 9 10>> 6 14 24 36 50 
