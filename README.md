@@ -13,23 +13,23 @@ But just as a sample of what works so far, here's a test log:
 
 *	\>\> 6668
 
-* aaa + 7			<!-- ok     show 15	-->aaa + 7			<!-- ok     show 15	-->
+## aaa + 7			<!-- ok     show 15	-->aaa + 7			<!-- ok     show 15	-->
 
 *	\>\> 15
 
-* bbb			<!-- ok     uninitialised: should show bbb --> >> bbb
+## bbb			<!-- ok     uninitialised: should show bbb --> >> bbb
 
-* aaa+ccc			<!-- ok     show 6676	-->aaa+ccc			<!-- ok     show 6676	-->
+## aaa+ccc			<!-- ok     show 6676	-->aaa+ccc			<!-- ok     show 6676	-->
 
 *	\>\> 6676
 
-* aaa+ccc+bbb		<!-- ok     show -59990 -->aaa+ccc+bbb		<!-- ok     show -59990 -->
+## aaa+ccc+bbb		<!-- ok     show -59990 -->aaa+ccc+bbb		<!-- ok     show -59990 -->
 
 *	\>\> -59990
 
 # tests/test3.mpl
 
-* ccc			<!-- ok     show 6668	-->ccc			<!-- ok     show 6668	-->
+## ccc			<!-- ok     show 6668	-->ccc			<!-- ok     show 6668	-->
 
 *	\>\> 6668
 
