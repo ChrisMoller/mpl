@@ -25,6 +25,7 @@ SymbolTable:: ~SymbolTable ()
 void
 SymbolTable::insert (std::string sym, antlrcpp::Any &val)
 {
+#if 0
   if (val.get_typeinfo() == typeid(antlr4::tree::ParseTree*)) {
     std::cout << "insert " << sym 
 	      << "(" << demangle (val) << ")"
@@ -33,6 +34,7 @@ SymbolTable::insert (std::string sym, antlrcpp::Any &val)
 	    val.as<antlr4::tree::ParseTree *>();
     printf ("val = 0x%p tree = %p\n", val, tree);
   }
+#endif
   antlrcpp::Any current = lookup (sym);
   if (current.isNotNull ()) symbols->erase (sym);
   antlrcpp::Any nv = antlrcpp::Any (val);
@@ -46,6 +48,7 @@ SymbolTable::lookup (std::string sym)
   if (!symbols->empty ()) {
     auto itr = symbols->find (sym);
     if (itr != symbols->end ()) {
+#if 0
       if (itr->second.get_typeinfo() == typeid(antlr4::tree::ParseTree*)) {
 	std::cout << "lookup " << sym
 		  << "(" << demangle (itr->second) << ")"
@@ -54,6 +57,7 @@ SymbolTable::lookup (std::string sym)
 	  itr->second.as<antlr4::tree::ParseTree *>();
 	printf ("itr->second = 0x%p tree = %p\n", itr->second, tree);
       }
+#endif
       return itr->second;
       //      rv = antlrcpp::Any (itr->second);
     }

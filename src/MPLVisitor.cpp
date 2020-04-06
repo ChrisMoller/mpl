@@ -106,8 +106,11 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
 	case ')':
 	  programme->update_symtab (latest_param, latest_init, latest_pt);
 	  state = STATE_WAITING_FOR_STATEMENTS;
+	  //	  break;
+	default:
+	  latest_pt = pt;
+	  //	  latest_init = ss;
 	  break;
-	default: latest_init = ss; break;
 	}
       }
       break;
@@ -595,7 +598,8 @@ MPLVisitor::visitMPLStatement(MPLParser::MPLStatementContext *ctx)
 	else if (newres.get_typeinfo() == typeid(antlr4::tree::ParseTree*)) {
 	  antlr4::tree::ParseTree *tree =
 	    newres.as<antlr4::tree::ParseTree *>();
-	  newres = tree->accept (this);
+	  //	  newres = tree->accept (this);
+	  rc = tree->accept (this);
 	}
 #endif
 	else {

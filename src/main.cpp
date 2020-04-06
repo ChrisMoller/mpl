@@ -34,6 +34,13 @@ void set_source (source_e src) {current_source = src;}
 using namespace mpl;
 using namespace antlr4;
 
+void
+do_demangle (antlrcpp::Any &val)
+{
+  std::cout << "type = " << demangle (val) << std::endl;
+  print_val (false, "", val);
+}
+
 antlrcpp::Any::~Any ()
 {
   /****
