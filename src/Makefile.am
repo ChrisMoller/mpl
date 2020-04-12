@@ -8,6 +8,7 @@ mpl_SOURCES = \
                MPLVisitor.cpp MPLVisitor.h \
                Print.cpp Print.h \
                SymbolTable.cpp SymbolTable.h \
+               ErrorExt.cpp ErrorExt.h \
                Programme.cpp Programme.h
 
 nodist_mpl_SOURCES =  MPLLexer.cpp MPLParser.cpp
@@ -31,8 +32,12 @@ AM_CPPFLAGS = -std=c++11 -Wno-attributes $(GSL_CFLAGS) \
 
 mpl_CFLAGS = -std=c++11 $(GSL_CFLAGS)
 
-mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib \
+#mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib \
+#      -lantlr4-runtime $(GSL_LIBS)
+
+mpl_LDFLAGS = -L/home/moller/Downloads/antlrcpp/dist \
       -lantlr4-runtime $(GSL_LIBS)
+
 
 if ENABLE_GCOV
 AM_CPPFLAGS += -fprofile-arcs -ftest-coverage

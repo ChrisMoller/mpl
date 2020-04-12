@@ -5,18 +5,19 @@
 #include <fstream>
 #include <getopt.h>
 #include <cxxabi.h>
-#include <antlr4-runtime.h>
 
+#include <antlr4-runtime.h>
 #include "main.h"
 #include "MPLLexer.h"
 #include "MPLParser.h"
 #include "MPLParserBaseVisitor.h"
+#include "MPLVisitor.h"
 
 #include "SymbolTable.h"
 #include "DyadicFcns.h"
 #include "MonadicFcns.h"
-#include "MPLVisitor.h"
 #include "Print.h"
+#include "ErrorExt.h"
 
 #include "Matrix.h"
 
@@ -31,8 +32,47 @@ bool isFromFile ()     { return current_source == SOURCE_FILE; }
 bool isFromCmdLine ()  { return current_source == SOURCE_CMDLINE; }
 void set_source (source_e src) {current_source = src;}
 
+using namespace antlrcpp;
 using namespace mpl;
 using namespace antlr4;
+
+#if 0
+void
+reportMissingToken(Parser *recognizer)
+{
+  std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>> missing\n";
+}
+
+void
+antlr4::DefaultErrorStrategy::reportUnwantedToken(antlr4::Parser *recognizer)
+{
+  std::cout << "<<<<<<<<<<<<<<<<<<<<<<<< ouch\n";
+}
+
+antlr4::Token*
+antlr4::DefaultErrorStrategy::recoverInline(antlr4::Parser *recognizer)
+{
+  std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+  
+   // Single token deletion.
+  Token *matchedSymbol = singleTokenDeletion(recognizer);
+  if (matchedSymbol) {
+    // We have deleted the extra token.
+    // Now, move past ttype token as if all were ok.
+    recognizer->consume();
+    return matchedSymbol;
+  }
+
+  // Single token insertion.
+  if (singleTokenInsertion(recognizer)) {
+    return getMissingSymbol(recognizer);
+  }
+
+  // Even that didn't work; must throw the exception.
+  throw InputMismatchException(recognizer);
+
+}
+#endif
 
 void
 do_demangle (antlrcpp::Any &val)
@@ -120,6 +160,11 @@ do_eval (source_e src, bool show, std::string str)
 
   
   MPLParser parser(&tokens);
+  ErrorExt *ee = new ErrorExt ();
+  parser.setErrorHandler (std::make_shared<ErrorExt>());
+  //  parser.setErrorHandler (std::make_shared<>());
+  //  parser.setErrorHandler (std::make_shared<DefaultErrorStrategy>());
+
   tree::ParseTree* tree = parser.main();
   std::vector<tree::ParseTree *> children = tree->children;
 

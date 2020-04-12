@@ -6,6 +6,8 @@
 #pragma once
 
 #include "SymbolTable.h"
+#include "Token.h"
+#include "MPLParser.h"
 
 
 #ifndef demangle
@@ -34,4 +36,5 @@ void pop_symbol_table ();
 void insert_symbol_value (std::string sym, antlrcpp::Any &val);
 antlrcpp::Any get_symbol_value (std::string sym);
 
+//antlr4::Token* antlr4::DefaultErrorStrategy::recoverInline(antlr4::Parser *recognizer);
 #endif // MAIN_H

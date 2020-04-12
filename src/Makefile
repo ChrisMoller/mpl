@@ -104,7 +104,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_mpl_OBJECTS = DyadicFcns.$(OBJEXT) Error.$(OBJEXT) main.$(OBJEXT) \
 	Matrix.$(OBJEXT) MonadicFcns.$(OBJEXT) MPLVisitor.$(OBJEXT) \
-	Print.$(OBJEXT) SymbolTable.$(OBJEXT) Programme.$(OBJEXT)
+	Print.$(OBJEXT) SymbolTable.$(OBJEXT) ErrorExt.$(OBJEXT) \
+	Programme.$(OBJEXT)
 nodist_mpl_OBJECTS = MPLLexer.$(OBJEXT) MPLParser.$(OBJEXT)
 mpl_OBJECTS = $(am_mpl_OBJECTS) $(nodist_mpl_OBJECTS)
 mpl_LDADD = $(LDADD)
@@ -193,7 +194,7 @@ AWK = gawk
 CPPFLAGS = 
 CXX = g++
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -283,6 +284,7 @@ mpl_SOURCES = \
                MPLVisitor.cpp MPLVisitor.h \
                Print.cpp Print.h \
                SymbolTable.cpp SymbolTable.h \
+               ErrorExt.cpp ErrorExt.h \
                Programme.cpp Programme.h
 
 nodist_mpl_SOURCES = MPLLexer.cpp MPLParser.cpp
@@ -302,8 +304,11 @@ AM_CPPFLAGS = -std=c++11 -Wno-attributes $(GSL_CFLAGS) \
 	-I/usr/local/antlr4/runtime/Cpp/run/usr/local/include/antlr4-runtime \
 	$(am__append_1)
 mpl_CFLAGS = -std=c++11 $(GSL_CFLAGS) $(am__append_2)
-mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib \
-	-lantlr4-runtime $(GSL_LIBS) $(am__append_3)
+
+#mpl_LDFLAGS = -L/usr/local/antlr4/runtime/Cpp/run/usr/local/lib \
+#      -lantlr4-runtime $(GSL_LIBS)
+mpl_LDFLAGS = -L/home/moller/Downloads/antlrcpp/dist -lantlr4-runtime \
+	$(GSL_LIBS) $(am__append_3)
 AM_LDFLAGS = -fprofile-arcs
 ANTLRFLAGS = -visitor -listener
 ANTLRJAR = /home/moller/javastuff/antlr-4.8-complete.jar
@@ -396,6 +401,7 @@ distclean-compile:
 
 include ./$(DEPDIR)/DyadicFcns.Po
 include ./$(DEPDIR)/Error.Po
+include ./$(DEPDIR)/ErrorExt.Po
 include ./$(DEPDIR)/MPLLexer.Po
 include ./$(DEPDIR)/MPLParser.Po
 include ./$(DEPDIR)/MPLVisitor.Po
