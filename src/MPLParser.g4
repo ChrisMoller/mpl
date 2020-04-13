@@ -124,14 +124,14 @@ expr	: <assoc = right> expr op
   	| Number     				# MPLNumber
   	| Number Number+		   	# MPLVector
     	| String				# MPLString
-	| OpenPar (id (OpEqual expr)? eos)* ClosePar
-	  OpenCurly stat+ CloseCurly            #MPLProgramme
-//	| OpenPar (expr Semicolon)* ClosePar
+	| (OpenPar (param (Semicolon param)*)? ClosePar)?
+	   OpenCurly (expr (Semicolon expr)*)? CloseCurly #MPLProgramme
+//	| OpenPar (id (OpEqual expr)? eos)* ClosePar
 //	  OpenCurly stat+ CloseCurly            #MPLProgramme
 	;
 
 
-//param   : id (OpEqual expr)?;
+param   : id (OpEqual expr)?;
 //param   : p=id {set_param($p.text);} (OpEqual e=expr {set_init ($e.text);})?;
 
 // e.start:  type antlr4::Token

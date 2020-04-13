@@ -36,44 +36,6 @@ using namespace antlrcpp;
 using namespace mpl;
 using namespace antlr4;
 
-#if 0
-void
-reportMissingToken(Parser *recognizer)
-{
-  std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>> missing\n";
-}
-
-void
-antlr4::DefaultErrorStrategy::reportUnwantedToken(antlr4::Parser *recognizer)
-{
-  std::cout << "<<<<<<<<<<<<<<<<<<<<<<<< ouch\n";
-}
-
-antlr4::Token*
-antlr4::DefaultErrorStrategy::recoverInline(antlr4::Parser *recognizer)
-{
-  std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
-  
-   // Single token deletion.
-  Token *matchedSymbol = singleTokenDeletion(recognizer);
-  if (matchedSymbol) {
-    // We have deleted the extra token.
-    // Now, move past ttype token as if all were ok.
-    recognizer->consume();
-    return matchedSymbol;
-  }
-
-  // Single token insertion.
-  if (singleTokenInsertion(recognizer)) {
-    return getMissingSymbol(recognizer);
-  }
-
-  // Even that didn't work; must throw the exception.
-  throw InputMismatchException(recognizer);
-
-}
-#endif
-
 void
 do_demangle (antlrcpp::Any &val)
 {

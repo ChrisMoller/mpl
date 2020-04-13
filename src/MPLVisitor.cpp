@@ -43,109 +43,64 @@ MPLVisitor::visitMPLProgramme(MPLParser::MPLProgrammeContext *ctx)
   antlrcpp::Any rc = Error (Error::ERROR_INTERNAL, " visitMPLProgramme");
 
   Programme *programme = new Programme (this);
+  
 
+  /****** params ***/
+  
+  std::vector<MPLParser::ParamContext *> param = ctx->param ();
+  if (!param.empty ()) {
+    size_t nr_params = param.size ();
+    std::cout << "param size = " << nr_params << std::endl;
+    for (size_t ix = 0; ix < nr_params; ix++) {
+      std::cout << "\nparam " << ix << std::endl;
+      MPLParser::ParamContext* tparam = ctx->param(ix);
+
+      MPLParser::IdContext *id = tparam->id();
+    
+      antlr4::Token *ptok = id->start;
+      if (ptok) {
+	std::cout << "\tptoken: \"" << ptok->getText ()
+		  << "\" type: " << ptok->getType ()
+		  << std::endl;
+      }
+      else std::cout << "\tnull parm name\n";
+
+      MPLParser::ExprContext *exp = tparam->expr();
+    
+      if (exp) {
+	std::cout << "\texpr etys: " << exp->children.size () << std::endl;
+	for (size_t ix = 0; ix < exp->children.size (); ix++) {
+	  antlr4::tree::ParseTree *pt = exp->children[ix];
+	  fprintf (stderr, "\t\tchild[%ld]: %p\n", ix, pt);
+	}
+      }
+      else std::cout << "\tno parm init\n";
+    }
+  }
+  else std::cout << "\tno params\n";
+
+  /********* statements **********/
+
+  std::vector<MPLParser::ExprContext *> stmts = ctx->expr ();
+  if (!stmts.empty ()) {
+    size_t nr_stmts = stmts.size ();
+    std::cout << "\nstmts size = " << nr_stmts << std::endl;
+    for (size_t ix = 0; ix < nr_stmts; ix++) {
+      MPLParser::ExprContext *exp = stmts[ix];
+      antlr4::tree::ParseTree *pt = exp->children[ix];
+      fprintf (stderr, "\tchild[%ld]: %p\n", ix, pt);
+    }
+  }
+  else std::cout << "\tno stmts\n";
+  
+#if 0
   state_e state = STATE_WAITING_FOR_PARAMS;
   size_t nr_kids = ctx->children.size ();
   for (size_t i = 0; i < nr_kids; i++) {
     antlr4::tree::ParseTree *pt =  ctx->children[i];
-#if 0
-    Token *token = pt->start;
-    //    antlrcpp::Any result = ctx->children[i]->accept(this);
-    //    antlrcpp::Any result = ctx->children[i];
-    std::cout << "toString " << i << " \"" << pt->toString () << "\"\n";;
-    std::cout << "toTree " << pt->toStringTree (false) << std::endl;
-    std::cout << "getText " << pt->getText () << std::endl;
-    std::cout << "\n";
-#if 0
-    std::cout << "child " << i << " "
-	      << " type \n\t"
-	      << "(" << demanglep (pt) << ")"
-	      << std::endl;
-#endif
-#endif
-
-    //    std::string str = pt->getText ();
-    //std::cout << i << " " << str << std::endl;
-    
-    switch(state) {
-    case STATE_WAITING_FOR_PARAMS:
-      {
-	std::string ss =  pt->getText ();
-	if ('(' == ss.front ()) {
-	  state = STATE_IN_PARAMS;
-	}
-      }
-      break;
-    case STATE_IN_PARAMS:
-      {
-	std::string ss =  pt->getText ();
-	switch (ss.front ()) {
-	case '=': state = STATE_WAITING_FOR_INITIALISER; break;
-	case ';':
-	  programme->update_symtab (latest_param, latest_init, latest_pt);
-	  state = STATE_IN_PARAMS;
-	  break;
-	case ')':
-	  programme->update_symtab (latest_param, latest_init, latest_pt);
-	  state = STATE_WAITING_FOR_STATEMENTS;
-	  break;
-	default:
-	  latest_param = ss;
-	  break;
-	}
-      }
-      break;
-    case STATE_WAITING_FOR_INITIALISER:
-      {
-	std::string ss =  pt->getText ();
-	switch (ss.front ()) {
-	case ';':
-	  programme->update_symtab (latest_param, latest_init, latest_pt);
-	  state = STATE_IN_PARAMS;
-	  break;
-	case ')':
-	  programme->update_symtab (latest_param, latest_init, latest_pt);
-	  state = STATE_WAITING_FOR_STATEMENTS;
-	  //	  break;
-	default:
-	  latest_pt = pt;
-	  //	  latest_init = ss;
-	  break;
-	}
-      }
-      break;
-    case STATE_WAITING_FOR_STATEMENTS:
-      {
-	std::string ss =  pt->getText ();
-	if ('{' == ss.front ()) {
-	  state = STATE_IN_STATEMENTS;
-	}
-      }
-      break;
-    case STATE_IN_STATEMENTS:
-      {
-	std::string ss =  pt->getText ();
-	switch (ss.front ()) {
-	case ';': state = STATE_WAITING_FOR_PARAMS; break;
-	case '}': state = STATE_WAITING_FOR_PARAMS; break;
-	default: programme->push_statement (pt); break;
-      }
-      break;
-    }
-      
-    
-    }
+    std::cout << "tree[" << i << "] \"" << pt->toStringTree (false) << "\"\n";
   }
-
-  std::vector<antlr4::tree::ParseTree *>*stmts =
-    programme->get_stmts ();
-  size_t n = stmts->size ();
-  for (size_t i = i; i < n; i++) {
-    antlr4::tree::ParseTree *px = (*stmts)[i];
-    antlr4::tree::ParseTreeVisitor *that = programme->get_this ();
-    //    antlrcpp::Any rc = px->accept (that);
-  }
-
+#endif
   rc = programme;
   
   return rc;
@@ -157,36 +112,8 @@ antlrcpp::Any
 MPLVisitor::visitMPLIndex(MPLParser::MPLIndexContext *ctx)
 {
   antlrcpp::Any rc = Error(Error::ERROR_INTERNAL, " visitMPLIndex");
-#if 0
-  std::cout << "n = "
-	    <<  ctx->children.size ()
-	    << std::endl;
-
-  for (size_t i = 0; i < ctx->children.size (); i++) {
-    antlrcpp::Any res = ctx->children[i]->accept(this);
-    std::cout << "res " << i << " expr \"" << lexpr << "\""
-	      << " type \n\t"
-	      << "(" << demangle (res) << ")"
-	      << std::endl;
-  }
-#endif
-
   antlrcpp::Any value = ctx->children[0]->accept(this);
-  
-#if 0
-  std::cout << "value type \n\t"
-	    << "(" << demangle (value) << ")"
-	    << std::endl;
-#endif
-  
   antlrcpp::Any index = ctx->children[2]->accept(this);
-  
-#if 0
-  std::cout << "index type \n\t"
-	    << "(" << demangle (index) << ")"
-	    << std::endl;
-#endif
-
   if (value.get_typeinfo() == typeid(std::string)) {
     std::string ss = value.as<std::string>();
     value = get_symbol_value (ss);

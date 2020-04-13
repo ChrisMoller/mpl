@@ -18,6 +18,8 @@
 #define demangled(res) abi::__cxa_demangle(res, 0, 0, nullptr)
 #endif
 
+void do_demangle (antlrcpp::Any &val);
+
 bool isTestMode ();
 
 typedef enum
